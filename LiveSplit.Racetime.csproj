@@ -34,8 +34,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DarkUI, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\DarkUI.2.0.0\lib\DarkUI.dll</HintPath>
+    <Reference Include="DarkUI, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\DarkUI.2.0.2\lib\DarkUI.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
