@@ -33,13 +33,13 @@ namespace LiveSplit.Racetime.Controller
 
         public string AccessToken
         {
-            get { return CredentialManager.ReadCredential("LiveSplit_racetimegg_accesstoken")?.Password; }
-            set { CredentialManager.WriteCredential("LiveSplit_racetimegg_accesstoken", "", value); }
+            get { return WebCredentials.RacetimeAccessToken; }
+            set { WebCredentials.RacetimeAccessToken = value; }
         }
         public string RefreshToken
         {
-            get { return CredentialManager.ReadCredential("LiveSplit_racetimegg_refreshtoken")?.Password; }
-            set { CredentialManager.WriteCredential("LiveSplit_racetimegg_refreshtoken", "", value); }
+            get { return WebCredentials.RacetimeRefreshToken; }
+            set { WebCredentials.RacetimeRefreshToken = value; }
         }
         public RacetimeUser Identity { get; protected set; }
         public string Error { get; protected set; }
