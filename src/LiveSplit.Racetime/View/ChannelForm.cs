@@ -5,9 +5,7 @@ using Microsoft.Web.WebView2.Core;
 using Ookii.Dialogs.WinForms;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -43,9 +41,7 @@ namespace LiveSplit.Racetime.View
         {
             try
             {
-                var currentDirectory = Path.GetDirectoryName(typeof(ChannelForm).Assembly.CodeBase).Substring(8);
-                var userDataFolder = Path.Combine(currentDirectory, "cache");
-                var environment = await CoreWebView2Environment.CreateAsync(userDataFolder: userDataFolder);
+                var environment = await CoreWebView2Environment.CreateAsync(userDataFolder: "WebView2_cache");
                 await chatBox.EnsureCoreWebView2Async(environment);
             }
             catch
