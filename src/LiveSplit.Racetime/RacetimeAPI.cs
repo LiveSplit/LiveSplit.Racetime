@@ -109,34 +109,5 @@ namespace LiveSplit.Racetime
         {
             return Races;
         }
-
-        Dictionary<string, Image> CategoryImagesCache = new Dictionary<string, Image>();
-        public override Image GetGameImage(string id)
-        {
-            try
-            {
-                foreach (var race in Races)
-                {
-                    if (race.Data.category.slug == id)
-                    {
-                        if (CategoryImagesCache.ContainsKey(id))
-                        {
-                            return CategoryImagesCache[id];
-                        }
-                        else if (race.Data.category.image != null)
-                        {
-                            WebClient wc = new WebClient();
-                            byte[] bytes = wc.DownloadData(race.Data.category.image);
-                            MemoryStream ms = new MemoryStream(bytes);
-                            System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-                            CategoryImagesCache.Add(id, img);
-                            return img;
-                        }
-                    }
-                }
-            }
-            catch { }
-            return null;
-        }
     }
 }
