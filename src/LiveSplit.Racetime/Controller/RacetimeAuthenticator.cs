@@ -314,7 +314,7 @@ public class RacetimeAuthenticator
     start:
 
         //0th:  ping server to check connectivity
-        string host = Properties.Resources.DOMAIN.Contains(":") ? Properties.Resources.DOMAIN.Substring(0, Properties.Resources.DOMAIN.IndexOf(':')) : Properties.Resources.DOMAIN;
+        string host = Properties.Resources.DOMAIN.Contains(":") ? Properties.Resources.DOMAIN[..Properties.Resources.DOMAIN.IndexOf(':')] : Properties.Resources.DOMAIN;
         try
         {
             var myPing = new Ping();

@@ -35,7 +35,7 @@ public class Race : RTModelBase, IRaceInfo
     public bool AllowNonEntrantChat => false;
     public bool AllowMidraceChat => Data.allow_midrace_chat;
     public bool AllowComments => Data.allow_comments;
-    public string GameSlug => Id.Substring(0, Id.IndexOf('/'));
+    public string GameSlug => Id[..Id.IndexOf('/')];
     public string Name => Data.name;
     public string Goal
     {
@@ -91,7 +91,7 @@ public class Race : RTModelBase, IRaceInfo
             }
         }
     }
-    public string ChannelName => Id.Substring(Id.IndexOf('/') + 1);
+    public string ChannelName => Id[(Id.IndexOf('/') + 1)..];
     public RaceState State
     {
         get

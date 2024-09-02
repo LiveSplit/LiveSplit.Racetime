@@ -27,14 +27,14 @@ public partial class ChannelForm : DarkForm
         Channel.Authorized += Channel_Authorized;
         InitializeComponent();
 
-        string exePath = Assembly.GetEntryAssembly().CodeBase.Substring(8);
+        string exePath = Assembly.GetEntryAssembly().CodeBase[8..];
         Icon = System.Drawing.Icon.ExtractAssociatedIcon(exePath);
 
         Load += OnLoaded;
         TopMost = alwaysOnTop;
         Show();
         chatBox.Hide();
-        Text = "Connecting to " + channelId.Substring(channelId.IndexOf('/') + 1);
+        Text = "Connecting to " + channelId[(channelId.IndexOf('/') + 1)..];
         Channel.Connect(channelId);
 
         chatBox.SourceChanged += OnSourceChanged;
