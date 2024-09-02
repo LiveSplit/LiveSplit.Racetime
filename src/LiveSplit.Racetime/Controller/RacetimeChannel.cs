@@ -29,13 +29,7 @@ public class RacetimeChannel
     public string FullSocketRoot => string.Format("{0}://{1}/", Properties.Resources.PROTOCOL_WEBSOCKET, Properties.Resources.DOMAIN);
 
     public Race Race { get; set; }
-    public UserStatus PersonalStatus
-    {
-        get
-        {
-            return GetPersonalStatus(Race);
-        }
-    }
+    public UserStatus PersonalStatus => GetPersonalStatus(Race);
 
     protected ITimerModel Model { get; set; }
 
@@ -689,11 +683,38 @@ public class RacetimeChannel
         RawMessageReceived?.Invoke(this, msg.First().Posted.ToString());
     }
 
-    public void Ready() => SendChannelMessage(".ready");
-    public void Quit() => SendChannelMessage(".quit");
-    public void Enter() => SendChannelMessage(".enter");
-    public void Accept() => SendChannelMessage(".acceptinvite");
-    public void Unready() => SendChannelMessage(".unready");
-    public void Done() => Model.Split();
-    public void Undone() => SendChannelMessage(".undone");
+    public void Ready()
+    {
+        SendChannelMessage(".ready");
+    }
+
+    public void Quit()
+    {
+        SendChannelMessage(".quit");
+    }
+
+    public void Enter()
+    {
+        SendChannelMessage(".enter");
+    }
+
+    public void Accept()
+    {
+        SendChannelMessage(".acceptinvite");
+    }
+
+    public void Unready()
+    {
+        SendChannelMessage(".unready");
+    }
+
+    public void Done()
+    {
+        Model.Split();
+    }
+
+    public void Undone()
+    {
+        SendChannelMessage(".undone");
+    }
 }

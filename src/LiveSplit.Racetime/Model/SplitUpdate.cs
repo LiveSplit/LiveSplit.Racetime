@@ -6,13 +6,7 @@ namespace LiveSplit.Racetime.Model;
 
 public class SplitUpdate : RTModelBase
 {
-    public string SplitName
-    {
-        get
-        {
-            return Data.split_name;
-        }
-    }
+    public string SplitName => Data.split_name;
 
     public TimeSpan? SplitTime
     {
@@ -24,27 +18,9 @@ public class SplitUpdate : RTModelBase
         }
     }
 
-    public bool IsUndo
-    {
-        get
-        {
-            return Data.is_undo;
-        }
-    }
+    public bool IsUndo => Data.is_undo;
 
-    public bool IsFinish
-    {
-        get
-        {
-            return Data.is_finish;
-        }
-    }
+    public bool IsFinish => Data.is_finish;
 
-    public string UserID
-    {
-        get
-        {
-            return Data.user_id;
-        }
-    }
+    public string UserID => Data.user_id;
 }

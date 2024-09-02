@@ -32,41 +32,11 @@ public class Race : RTModelBase, IRaceInfo
             stream_override = e.stream_override
         };
     }
-    public bool AllowNonEntrantChat
-    {
-        get
-        {
-            return false;
-        }
-    }
-    public bool AllowMidraceChat
-    {
-        get
-        {
-            return Data.allow_midrace_chat;
-        }
-    }
-    public bool AllowComments
-    {
-        get
-        {
-            return Data.allow_comments;
-        }
-    }
-    public string GameSlug
-    {
-        get
-        {
-            return Id.Substring(0, Id.IndexOf('/'));
-        }
-    }
-    public string Name
-    {
-        get
-        {
-            return Data.name;
-        }
-    }
+    public bool AllowNonEntrantChat => false;
+    public bool AllowMidraceChat => Data.allow_midrace_chat;
+    public bool AllowComments => Data.allow_comments;
+    public string GameSlug => Id.Substring(0, Id.IndexOf('/'));
+    public string Name => Data.name;
     public string Goal
     {
         get
@@ -110,13 +80,7 @@ public class Race : RTModelBase, IRaceInfo
             }
         }
     }
-    public int NumEntrants
-    {
-        get
-        {
-            return Data.entrants_count;
-        }
-    }
+    public int NumEntrants => Data.entrants_count;
     public IEnumerable<RacetimeUser> Entrants
     {
         get
@@ -127,13 +91,7 @@ public class Race : RTModelBase, IRaceInfo
             }
         }
     }
-    public string ChannelName
-    {
-        get
-        {
-            return Id.Substring(Id.IndexOf('/') + 1);
-        }
-    }
+    public string ChannelName => Id.Substring(Id.IndexOf('/') + 1);
     public RaceState State
     {
         get
@@ -184,13 +142,7 @@ public class Race : RTModelBase, IRaceInfo
             }
         }
     }
-    public RacetimeUser OpenedBy
-    {
-        get
-        {
-            return RTModelBase.Create<RacetimeUser>(Data.opened_by);
-        }
-    }
+    public RacetimeUser OpenedBy => RTModelBase.Create<RacetimeUser>(Data.opened_by);
 
     public int Finishes => Data.entrants_count_finished;
     public int Forfeits => Data.entrants_count_inactive;

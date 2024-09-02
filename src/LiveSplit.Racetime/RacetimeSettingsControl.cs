@@ -9,7 +9,7 @@ public partial class RacetimeSettingsControl : UserControl
 
     public RacetimeSettings Settings
     {
-        get { return settings; }
+        get => settings;
         set { settings = value; RacetimeSettingsControl_VisibleChanged(this, null); }
     }
 

@@ -90,13 +90,7 @@ public class LiveSplitMessage : ChatMessage
 {
     public override MessageType Type => MessageType.LiveSplit;
 
-    public override RacetimeUser User
-    {
-        get
-        {
-            return RacetimeUser.LiveSplit;
-        }
-    }
+    public override RacetimeUser User => RacetimeUser.LiveSplit;
 
     public static LiveSplitMessage Create(string msg, bool important)
     {
@@ -130,21 +124,9 @@ public class SystemMessage : ChatMessage
         }
     }
 
-    public override RacetimeUser User
-    {
-        get
-        {
-            return RacetimeUser.System;
-        }
-    }
+    public override RacetimeUser User => RacetimeUser.System;
 
-    public bool IsFinishingMessage
-    {
-        get
-        {
-            return Regex.IsMatch(Message, "(finish|forfeit|comment|done)", RegexOptions.IgnoreCase);
-        }
-    }
+    public bool IsFinishingMessage => Regex.IsMatch(Message, "(finish|forfeit|comment|done)", RegexOptions.IgnoreCase);
 }
 public class BotMessage : ChatMessage
 {
@@ -180,13 +162,7 @@ public class BotMessage : ChatMessage
         }
     }
 
-    public override RacetimeUser User
-    {
-        get
-        {
-            return RacetimeUser.Bot;
-        }
-    }
+    public override RacetimeUser User => RacetimeUser.Bot;
 }
 
 public class UserMessage : ChatMessage
@@ -214,13 +190,7 @@ public class ErrorMessage : ChatMessage
 
     public override bool Highlight => true;
 
-    public override RacetimeUser User
-    {
-        get
-        {
-            return RacetimeUser.System;
-        }
-    }
+    public override RacetimeUser User => RacetimeUser.System;
 
     public override string Message
     {
@@ -259,13 +229,7 @@ public class SplitMessage : ChatMessage
         }
     }
 
-    public SplitUpdate SplitUpdate
-    {
-        get
-        {
-            return RTModelBase.Create<SplitUpdate>(Data);
-        }
-    }
+    public SplitUpdate SplitUpdate => RTModelBase.Create<SplitUpdate>(Data);
 }
 public class RaceMessage : ChatMessage
 {
@@ -286,11 +250,5 @@ public class RaceMessage : ChatMessage
         }
     }
 
-    public Race Race
-    {
-        get
-        {
-            return RTModelBase.Create<Race>(Data);
-        }
-    }
+    public Race Race => RTModelBase.Create<Race>(Data);
 }

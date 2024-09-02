@@ -19,41 +19,11 @@ public class RacetimeUser : RTModelBase
     {
         return Name.ToLower() == ((RacetimeUser)obj)?.Name?.ToLower();
     }
-    public string ID
-    {
-        get
-        {
-            return Data.id;
-        }
-    }
-    public string FullName
-    {
-        get
-        {
-            return Data.full_name;
-        }
-    }
-    public string Name
-    {
-        get
-        {
-            return Data.name ?? "";
-        }
-    }
-    public string TwitchChannel
-    {
-        get
-        {
-            return Data.twitch_channel;
-        }
-    }
-    public string TwitchName
-    {
-        get
-        {
-            return Data.twitch_name;
-        }
-    }
+    public string ID => Data.id;
+    public string FullName => Data.full_name;
+    public string Name => Data.name ?? "";
+    public string TwitchChannel => Data.twitch_channel;
+    public string TwitchName => Data.twitch_name;
     public UserRole Role
     {
         get
@@ -120,13 +90,7 @@ public class RacetimeUser : RTModelBase
             }
         }
     }
-    public bool HasFinished
-    {
-        get
-        {
-            return FinishedAt != DateTime.MaxValue;
-        }
-    }
+    public bool HasFinished => FinishedAt != DateTime.MaxValue;
     public int Place
     {
         get

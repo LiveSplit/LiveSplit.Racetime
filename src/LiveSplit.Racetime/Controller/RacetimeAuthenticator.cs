@@ -21,42 +21,24 @@ public class RacetimeAuthenticator
 
     protected string Code { get; set; }
     private TcpListener localEndpoint;
-    protected string RedirectUri
-    {
-        get
-        {
-            return $"http://{s.RedirectAddress}:{s.RedirectPort}/";
-        }
-    }
+    protected string RedirectUri => $"http://{s.RedirectAddress}:{s.RedirectPort}/";
 
 
     public string AccessToken
     {
-        get { return WebCredentials.RacetimeAccessToken; }
-        set { WebCredentials.RacetimeAccessToken = value; }
+        get => WebCredentials.RacetimeAccessToken;
+        set => WebCredentials.RacetimeAccessToken = value;
     }
     public string RefreshToken
     {
-        get { return WebCredentials.RacetimeRefreshToken; }
-        set { WebCredentials.RacetimeRefreshToken = value; }
+        get => WebCredentials.RacetimeRefreshToken;
+        set => WebCredentials.RacetimeRefreshToken = value;
     }
     public RacetimeUser Identity { get; protected set; }
     public string Error { get; protected set; }
     public DateTime TokenExpireDate { get; protected set; }
-    public bool IsAuthenticated
-    {
-        get
-        {
-            return Code != null;
-        }
-    }
-    public bool IsAuthorized
-    {
-        get
-        {
-            return (AccessToken != null);
-        }
-    }
+    public bool IsAuthenticated => Code != null;
+    public bool IsAuthorized => (AccessToken != null);
 
     public bool IsAuthorizing { get; set; }
 
