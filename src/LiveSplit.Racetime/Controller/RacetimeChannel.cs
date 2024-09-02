@@ -577,7 +577,7 @@ public class RacetimeChannel
                 dynamic data = new DynamicJsonObject();
                 cmd.action = "split";
                 data.split = split.Name;
-                data.is_finish = Model.CurrentState.CurrentSplitIndex >= Model.CurrentState.Run.Count ? true : false;
+                data.is_finish = Model.CurrentState.CurrentSplitIndex >= Model.CurrentState.Run.Count;
                 data.time = timeFormatter.Format(split.SplitTime.RealTime);
                 cmd.data = data;
                 SendChannelCommand(cmd.ToString());
