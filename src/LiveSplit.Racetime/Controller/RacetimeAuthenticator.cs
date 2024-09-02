@@ -224,7 +224,6 @@ public class RacetimeAuthenticator
     private async Task<int> TryGetAuthenticated()
     {
         string reqState, state, verifier = null, challenge, request, response;
-        Tuple<int, dynamic> result;
 
         Error = null;
         reqState = null;
@@ -292,7 +291,7 @@ public class RacetimeAuthenticator
         {
             return 404;
         }
-        catch (Exception ex)
+        catch
         {
             Error = "Unknown Error";
             StopLocalEndpoint();
@@ -349,7 +348,7 @@ public class RacetimeAuthenticator
         }
         catch { }
 
-        //2nd: if this fails, try to renew access 
+        //2nd: if this fails, try to renew access
         try
         {
             //if there is a refresh token

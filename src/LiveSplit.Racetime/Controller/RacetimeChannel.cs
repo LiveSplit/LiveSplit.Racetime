@@ -222,7 +222,7 @@ public class RacetimeChannel
             {
                 await ws.ConnectAsync(new Uri(FullSocketRoot + "ws/o/race/" + id), websocket_cts.Token);
             }
-            catch (WebSocketException wex)
+            catch
             {
                 ConnectionError++;
                 goto cleanup;
@@ -241,7 +241,7 @@ public class RacetimeChannel
                     await ReceiveAndProcess();
 
                 }
-                catch (Exception ex)
+                catch
                 {
                     SendSystemMessage("Unable to obtain Race information. Try reloading");
                     goto cleanup;
@@ -276,7 +276,7 @@ public class RacetimeChannel
                     await ReceiveAndProcess();
 
                 }
-                catch (Exception ex)
+                catch
                 {
                 }
             }
@@ -616,7 +616,7 @@ public class RacetimeChannel
                 await RunAsync(id.Split('/')[1]);
                 break;
             }
-            catch (Exception ex)
+            catch
             {
                 IsConnected = false;
             }

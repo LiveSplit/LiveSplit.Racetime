@@ -93,7 +93,7 @@ public class RacetimeUser : RTModelBase
 
                 return DateTime.MaxValue;
             }
-            catch (Exception ex)
+            catch
             {
                 return DateTime.MaxValue;
             }

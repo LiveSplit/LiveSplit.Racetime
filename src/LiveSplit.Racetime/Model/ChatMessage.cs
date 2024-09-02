@@ -48,7 +48,7 @@ public abstract class ChatMessage : RTModelBase
 
                 return DateTime.Parse(Data.posted_at);
             }
-            catch (Exception ex)
+            catch
             {
                 return DateTime.MaxValue;
             }
