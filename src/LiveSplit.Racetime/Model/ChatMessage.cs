@@ -197,7 +197,7 @@ public class ErrorMessage : ChatMessage
             try
             {
                 string msg = "";
-                foreach (var s in Data.errors)
+                foreach (dynamic s in Data.errors)
                 {
                     msg += s + " ";
                 }

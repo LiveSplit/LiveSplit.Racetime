@@ -68,7 +68,7 @@ public class RacetimeChannel
 
     protected UserStatus GetPersonalStatus(Race race)
     {
-        var u = race?.Entrants?.FirstOrDefault(x => x.Name.ToLower() == RacetimeAPI.Instance.Authenticator.Identity?.Name.ToLower());
+        RacetimeUser u = race?.Entrants?.FirstOrDefault(x => x.Name.ToLower() == RacetimeAPI.Instance.Authenticator.Identity?.Name.ToLower());
         if (u == null)
         {
             return UserStatus.Unknown;
@@ -92,13 +92,13 @@ public class RacetimeChannel
             {
                 if (free < 1)
                 {
-                    var newSize = buf.Length + bufferSize;
+                    int newSize = buf.Length + bufferSize;
                     if (newSize > maxBufferSize)
                     {
                         throw new InternalBufferOverflowException();
                     }
 
-                    var newBuf = new byte[newSize];
+                    byte[] newBuf = new byte[newSize];
                     Array.Copy(buf, 0, newBuf, 0, read);
                     buf = newBuf;
                     free = buf.Length - read;
@@ -182,7 +182,7 @@ public class RacetimeChannel
         }
 
         websocket_cts = new CancellationTokenSource();
-        var Authenticator = RacetimeAPI.Instance.Authenticator;
+        RacetimeAuthenticator Authenticator = RacetimeAPI.Instance.Authenticator;
 
         using (ws = new ClientWebSocket())
         {
@@ -236,7 +236,7 @@ public class RacetimeChannel
                 SendSystemMessage($"Joined Channel '{id}'");
                 try
                 {
-                    ArraySegment<byte> bytesToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes("{ \"action\":\"getrace\" }"));
+                    var bytesToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes("{ \"action\":\"getrace\" }"));
                     ws.SendAsync(bytesToSend, WebSocketMessageType.Text, true, CancellationToken.None);
                     await ReceiveAndProcess();
 
@@ -254,7 +254,7 @@ public class RacetimeChannel
                     if (ConnectionError >= 0 && Settings.LoadChatHistory) //don't load after every reconnect
                     {
                         SendSystemMessage("Loading chat history...");
-                        ArraySegment<byte> otherBytesToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes("{ \"action\":\"gethistory\" }"));
+                        var otherBytesToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes("{ \"action\":\"gethistory\" }"));
                         ws.SendAsync(otherBytesToSend, WebSocketMessageType.Text, true, CancellationToken.None);
                         await ReceiveAndProcess();
 
@@ -326,7 +326,7 @@ public class RacetimeChannel
     private void UpdateRaceData(RaceMessage msg)
     {
         //ignore double tap prevention when updating race data
-        var m = Model;
+        ITimerModel m = Model;
         if (m is DoubleTapPrevention)
         {
             m = ((DoubleTapPrevention)Model).InternalModel;
@@ -425,16 +425,16 @@ public class RacetimeChannel
             return;
         }
 
-        var run = Model.CurrentState.Run;
+        IRun run = Model.CurrentState.Run;
 
-        var user = Race?.Entrants?.FirstOrDefault(x => x.ID == split.UserID);
+        RacetimeUser user = Race?.Entrants?.FirstOrDefault(x => x.ID == split.UserID);
         if (user == null)
         {
             return;
         }
 
-        var comparisonName = RacetimeComparisonGenerator.GetRaceComparisonName(user.FullName);
-        var segment = run.FirstOrDefault(x => x.Name.Trim().ToLower() == split.SplitName && x.Comparisons[comparisonName][TimingMethod.RealTime] == null);
+        string comparisonName = RacetimeComparisonGenerator.GetRaceComparisonName(user.FullName);
+        ISegment segment = run.FirstOrDefault(x => x.Name.Trim().ToLower() == split.SplitName && x.Comparisons[comparisonName][TimingMethod.RealTime] == null);
 
         if (split.IsUndo)
         {
@@ -458,7 +458,7 @@ public class RacetimeChannel
     {
         try
         {
-            foreach (var entrant in race.Entrants)
+            foreach (RacetimeUser entrant in race.Entrants)
             {
                 if (entrant.Name != Username)
                 {
@@ -474,8 +474,8 @@ public class RacetimeChannel
 
     protected void AddComparison(string userName)
     {
-        var run = Model.CurrentState.Run;
-        var comparisonName = RacetimeComparisonGenerator.GetRaceComparisonName(userName);
+        IRun run = Model.CurrentState.Run;
+        string comparisonName = RacetimeComparisonGenerator.GetRaceComparisonName(userName);
         if (run.ComparisonGenerators.All(x => x.Name != comparisonName))
         {
             CompositeComparisons.AddShortComparisonName(comparisonName, userName);
@@ -490,7 +490,7 @@ public class RacetimeChannel
             Model.CurrentState.CurrentComparison = Run.PersonalBestComparisonName;
         }
 
-        for (var ind = 0; ind < Model.CurrentState.Run.ComparisonGenerators.Count; ind++)
+        for (int ind = 0; ind < Model.CurrentState.Run.ComparisonGenerators.Count; ind++)
         {
             if (RacetimeComparisonGenerator.IsRaceComparison(Model.CurrentState.Run.ComparisonGenerators[ind].Name))
             {
@@ -499,11 +499,11 @@ public class RacetimeChannel
             }
         }
 
-        foreach (var segment in Model.CurrentState.Run)
+        foreach (ISegment segment in Model.CurrentState.Run)
         {
-            for (var ind = 0; ind < segment.Comparisons.Count; ind++)
+            for (int ind = 0; ind < segment.Comparisons.Count; ind++)
             {
-                var comparison = segment.Comparisons.ElementAt(ind);
+                KeyValuePair<string, Time> comparison = segment.Comparisons.ElementAt(ind);
                 if (RacetimeComparisonGenerator.IsRaceComparison(comparison.Key))
                 {
                     segment.Comparisons[comparison.Key] = default;
@@ -553,7 +553,7 @@ public class RacetimeChannel
 
         if (PersonalStatus == UserStatus.Racing)
         {
-            var split = Model.CurrentState.CurrentSplit;
+            ISegment split = Model.CurrentState.CurrentSplit;
             dynamic cmd = new DynamicJsonObject();
             dynamic data = new DynamicJsonObject();
             cmd.action = "split";
@@ -572,7 +572,7 @@ public class RacetimeChannel
         {
             if (Model.CurrentState.CurrentSplitIndex > 0)
             {
-                var split = Model.CurrentState.Run[Model.CurrentState.CurrentSplitIndex - 1];
+                ISegment split = Model.CurrentState.Run[Model.CurrentState.CurrentSplitIndex - 1];
                 dynamic cmd = new DynamicJsonObject();
                 dynamic data = new DynamicJsonObject();
                 cmd.action = "split";
@@ -651,7 +651,7 @@ public class RacetimeChannel
         }
     }
 
-    private readonly Regex cmdRegex = new Regex(@"^\.([a-z]+)\s*?(.+)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private readonly Regex cmdRegex = new(@"^\.([a-z]+)\s*?(.+)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     public DynamicJsonObject CreateCommand(string message)
     {
@@ -684,7 +684,7 @@ public class RacetimeChannel
     public async void SendChannelCommand(string data)
     {
         RawMessageReceived?.Invoke(this, data);
-        ArraySegment<byte> bytesToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes(data));
+        var bytesToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes(data));
 
         if (IsConnected && ws != null)
         {

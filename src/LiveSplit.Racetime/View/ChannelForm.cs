@@ -27,7 +27,7 @@ public partial class ChannelForm : DarkForm
         Channel.Authorized += Channel_Authorized;
         InitializeComponent();
 
-        var exePath = Assembly.GetEntryAssembly().CodeBase.Substring(8);
+        string exePath = Assembly.GetEntryAssembly().CodeBase.Substring(8);
         Icon = System.Drawing.Icon.ExtractAssociatedIcon(exePath);
 
         Load += OnLoaded;
@@ -45,7 +45,7 @@ public partial class ChannelForm : DarkForm
     {
         try
         {
-            var environment = await CoreWebView2Environment.CreateAsync(userDataFolder: "WebView2_cache");
+            CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync(userDataFolder: "WebView2_cache");
             await chatBox.EnsureCoreWebView2Async(environment);
         }
         catch
@@ -126,7 +126,7 @@ public partial class ChannelForm : DarkForm
         // Channel.Token.AccessToken
         if (!string.IsNullOrEmpty(Channel.Token.AccessToken))
         {
-            var headers = e.Request.Headers;
+            CoreWebView2HttpRequestHeaders headers = e.Request.Headers;
             if (e.Request.Uri.ToLower().Contains(Properties.Resources.PROTOCOL_REST.ToLower() + "://" + Properties.Resources.DOMAIN.ToLower()))
             {
                 headers.SetHeader("Authorization", $"Bearer {Channel.Token.AccessToken}");

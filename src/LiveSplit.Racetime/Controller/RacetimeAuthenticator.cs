@@ -64,22 +64,22 @@ public class RacetimeAuthenticator
         this.s = s;
     }
 
-    private readonly Regex parameterRegex = new Regex(@"(\w+)=([-_A-Z0-9]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private readonly Regex parameterRegex = new(@"(\w+)=([-_A-Z0-9]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     private static string ReadResponse(TcpClient client)
     {
         try
         {
-            var readBuffer = new byte[client.ReceiveBufferSize];
+            byte[] readBuffer = new byte[client.ReceiveBufferSize];
             string fullServerReply = null;
 
             using (var inStream = new MemoryStream())
             {
-                var stream = client.GetStream();
+                NetworkStream stream = client.GetStream();
 
                 while (stream.DataAvailable)
                 {
-                    var numberOfBytesRead = stream.Read(readBuffer, 0, readBuffer.Length);
+                    int numberOfBytesRead = stream.Read(readBuffer, 0, readBuffer.Length);
                     if (numberOfBytesRead <= 0)
                     {
                         break;
@@ -102,7 +102,7 @@ public class RacetimeAuthenticator
     private static string SHA256(string inputStirng)
     {
         byte[] bytes = Encoding.ASCII.GetBytes(inputStirng);
-        SHA256Managed sha256 = new SHA256Managed();
+        var sha256 = new SHA256Managed();
         sha256.ComputeHash(bytes);
         string base64 = Convert.ToBase64String(bytes);
         base64 = base64.Replace("+", "-");
@@ -113,7 +113,7 @@ public class RacetimeAuthenticator
 
     private static string GenerateRandomBase64Data(uint length)
     {
-        RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+        var rng = new RNGCryptoServiceProvider();
         byte[] bytes = new byte[length];
         rng.GetBytes(bytes);
         string base64 = Convert.ToBase64String(bytes);
@@ -318,10 +318,10 @@ public class RacetimeAuthenticator
         string host = Properties.Resources.DOMAIN.Contains(":") ? Properties.Resources.DOMAIN.Substring(0, Properties.Resources.DOMAIN.IndexOf(':')) : Properties.Resources.DOMAIN;
         try
         {
-            Ping myPing = new Ping();
+            var myPing = new Ping();
             byte[] buffer = new byte[32];
             int timeout = 5000;
-            PingOptions pingOptions = new PingOptions();
+            var pingOptions = new PingOptions();
             PingReply reply = myPing.Send(host, timeout, buffer, pingOptions);
             if (reply.Status != IPStatus.Success)
             {
@@ -409,8 +409,8 @@ public class RacetimeAuthenticator
     {
         var userInfoRequest = WebRequest.Create($"{s.AuthServer}{s.UserInfoEndpoint}");
         userInfoRequest.Headers.Add(HttpRequestHeader.Authorization, $"Bearer {AccessToken}");
-        using var r = userInfoRequest.GetResponse();
-        var userdata = JSON.FromResponse(r);
+        using WebResponse r = userInfoRequest.GetResponse();
+        dynamic userdata = JSON.FromResponse(r);
         return RTModelBase.Create<RacetimeUser>(userdata);
     }
 
@@ -423,7 +423,7 @@ public class RacetimeAuthenticator
     {
         string state = GenerateRandomBase64Data(32);
         body += "&state=" + state;
-        HttpWebRequest tokenRequest = (HttpWebRequest)WebRequest.Create($"{s.AuthServer}{s.TokenEndpoint}");
+        var tokenRequest = (HttpWebRequest)WebRequest.Create($"{s.AuthServer}{s.TokenEndpoint}");
 
         tokenRequest.Method = "POST";
         tokenRequest.ContentType = "application/x-www-form-urlencoded";
@@ -449,7 +449,7 @@ public class RacetimeAuthenticator
                 WebResponse response = ex.Response as HttpWebResponse;
                 try
                 {
-                    var r = JSON.FromResponse(response);
+                    dynamic r = JSON.FromResponse(response);
                     return new Tuple<int, dynamic>(400, r);
                 }
                 catch

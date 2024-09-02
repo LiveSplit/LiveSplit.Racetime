@@ -13,7 +13,7 @@ public abstract class RTModelBase
             return null;
         }
 
-        T item = new T
+        var item = new T
         {
             Received = DateTime.Now,
             Data = dataroot

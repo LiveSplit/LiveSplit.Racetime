@@ -16,7 +16,7 @@ namespace LiveSplit.Racetime;
 
 public class RacetimeAPI : RaceProviderAPI
 {
-    protected static readonly Uri BaseUri = new Uri($"{Properties.Resources.PROTOCOL_REST}://{Properties.Resources.DOMAIN}/");
+    protected static readonly Uri BaseUri = new($"{Properties.Resources.PROTOCOL_REST}://{Properties.Resources.DOMAIN}/");
     protected static string racesEndpoint => Properties.Resources.ENDPOINT_RACES;
     private static RacetimeAPI _instance;
     public static RacetimeAPI Instance
@@ -85,11 +85,11 @@ public class RacetimeAPI : RaceProviderAPI
         var request = WebRequest.Create(new Uri(BaseUri.AbsoluteUri + racesEndpoint));
         request.Headers.Add("Authorization", "Bearer " + Authenticator.AccessToken);
 
-        using var response = request.GetResponse();
-        var data = JSON.FromResponse(response);
+        using WebResponse response = request.GetResponse();
+        dynamic data = JSON.FromResponse(response);
 
-        var races = data.races;
-        foreach (var r in races)
+        dynamic races = data.races;
+        foreach (dynamic r in races)
         {
             Race raceObj;
             r.entrants = new List<dynamic>();

@@ -85,7 +85,7 @@ public class Race : RTModelBase, IRaceInfo
     {
         get
         {
-            foreach (var e in Data.entrants)
+            foreach (dynamic e in Data.entrants)
             {
                 yield return RTModelBase.Create<RacetimeUser>(EntrantToUserConverter(e));
             }
