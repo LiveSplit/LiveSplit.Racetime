@@ -171,16 +171,16 @@ public partial class ChannelForm : DarkForm
 
     private void ShowWebView2DownloadDialog()
     {
-        if (this.InvokeRequired)
+        if (InvokeRequired)
         {
-            this.Invoke((Action)(() => ShowWebView2DownloadDialog()));
+            Invoke((Action)(() => ShowWebView2DownloadDialog()));
             return;
         }
 
         var downloadButton = new TaskDialogButton("Download") { CommandLinkNote = "This will open in your default web browser." };
         var closeButton = new TaskDialogButton("Close") { CommandLinkNote = "LiveSplit.Racetime will not work until runtimes are installed." };
 
-        var dialog = new TaskDialog(this.Container);
+        var dialog = new TaskDialog(Container);
         dialog.CustomMainIcon = dialog.WindowIcon = Icon;
         dialog.MainInstruction = dialog.WindowTitle = "Microsoft Edge WebView2 Runtime Required";
         dialog.Content = "LiveSplit.Racetime requires the Microsoft Edge WebView2 Runtime to be installed on your machine in order to function. This should be included with Microsoft Edge, but we couldn't find it. Do you want to download it now?";

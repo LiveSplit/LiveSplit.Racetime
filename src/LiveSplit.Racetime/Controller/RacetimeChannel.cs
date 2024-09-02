@@ -506,7 +506,7 @@ public class RacetimeChannel
                 var comparison = segment.Comparisons.ElementAt(ind);
                 if (RacetimeComparisonGenerator.IsRaceComparison(comparison.Key))
                 {
-                    segment.Comparisons[comparison.Key] = default(Time);
+                    segment.Comparisons[comparison.Key] = default;
                 }
             }
         }
