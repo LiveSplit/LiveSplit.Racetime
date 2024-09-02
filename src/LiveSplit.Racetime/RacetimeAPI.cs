@@ -85,21 +85,19 @@ public class RacetimeAPI : RaceProviderAPI
         var request = WebRequest.Create(new Uri(BaseUri.AbsoluteUri + racesEndpoint));
         request.Headers.Add("Authorization", "Bearer " + Authenticator.AccessToken);
 
-        using (var response = request.GetResponse())
+        using var response = request.GetResponse();
+        var data = JSON.FromResponse(response);
+
+        var races = data.races;
+        foreach (var r in races)
         {
-            var data = JSON.FromResponse(response);
-
-            var races = data.races;
-            foreach (var r in races)
-            {
-                Race raceObj;
-                r.entrants = new List<dynamic>();
-                raceObj = RTModelBase.Create<Race>(r);
-                yield return raceObj;
-            }
-
-            yield break;
+            Race raceObj;
+            r.entrants = new List<dynamic>();
+            raceObj = RTModelBase.Create<Race>(r);
+            yield return raceObj;
         }
+
+        yield break;
     }
 
     public override IEnumerable<IRaceInfo> GetRaces()

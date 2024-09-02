@@ -52,11 +52,9 @@ public class RacetimeAuthenticator
     {
         await Task.Run(() =>
         {
-            using (var writer = new StreamWriter(client.GetStream(), new UTF8Encoding(false)))
-            {
-                writer.WriteLine("HTTP/1.0 301 Moved Permanently");
-                writer.WriteLine($"Location: {s.AuthServer}{target}");
-            }
+            using var writer = new StreamWriter(client.GetStream(), new UTF8Encoding(false));
+            writer.WriteLine("HTTP/1.0 301 Moved Permanently");
+            writer.WriteLine($"Location: {s.AuthServer}{target}");
         });
         return true;
     }
@@ -411,11 +409,9 @@ public class RacetimeAuthenticator
     {
         var userInfoRequest = WebRequest.Create($"{s.AuthServer}{s.UserInfoEndpoint}");
         userInfoRequest.Headers.Add(HttpRequestHeader.Authorization, $"Bearer {AccessToken}");
-        using (var r = userInfoRequest.GetResponse())
-        {
-            var userdata = JSON.FromResponse(r);
-            return RTModelBase.Create<RacetimeUser>(userdata);
-        }
+        using var r = userInfoRequest.GetResponse();
+        var userdata = JSON.FromResponse(r);
+        return RTModelBase.Create<RacetimeUser>(userdata);
     }
 
     public void UpdateUserInfo()
