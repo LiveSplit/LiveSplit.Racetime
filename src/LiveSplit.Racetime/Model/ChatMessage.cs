@@ -1,302 +1,296 @@
-﻿using LiveSplit.Web;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace LiveSplit.Racetime.Model
+namespace LiveSplit.Racetime.Model;
+
+public abstract class ChatMessage : RTModelBase
 {
-    public abstract class ChatMessage : RTModelBase
+    public abstract MessageType Type { get; }
+
+    public virtual string Message
     {
-        public abstract MessageType Type { get; }
-
-        public virtual string Message
+        get
         {
-            get
+            try
             {
-                try
-                {
-                    return Data.message;
-                }
-                catch
-                {
-                    return "";
-                }
+                return Data.message;
             }
-        }
-        public virtual RacetimeUser User
-        {
-            get
+            catch
             {
-                try
-                {
-                    return RTModelBase.Create<RacetimeUser>(Data.user);
-                }
-                catch
-                {
-                    return null;
-                }
-            }
-        }
-        public DateTime Posted
-        {
-            get
-            {
-                try
-                {
-                    if (Data.posted_at == null)
-                        return Received;
-                    return DateTime.Parse(Data.posted_at);
-                }
-                catch(Exception ex)
-                {
-                    return DateTime.MaxValue;
-                }
-            }
-        }
-        public virtual bool Highlight
-        {
-            get
-            {
-                try
-                {
-                    return Data.highlight;
-                }
-                catch
-                {
-                    return false;
-                }
-
-            }
-        }
-        public bool IsSystem
-        {
-            get
-            {
-                try
-                {
-                    return Data.is_system;
-                }
-                catch
-                {
-                    return false;
-                }
-
-            }
-        }
-
-
-
-    }
-
-    public class LiveSplitMessage : ChatMessage
-    {
-        public override MessageType Type => MessageType.LiveSplit;
-
-        public override RacetimeUser User
-        {
-            get
-            {
-                return RacetimeUser.LiveSplit;
-            }
-        }
-
-        public static LiveSplitMessage Create(string msg, bool important)
-        {
-            var dataroot = new
-            {
-                message = msg,
-                user = RacetimeUser.LiveSplit,
-                posted_at = DateTime.Now.ToString(),
-                highlight = important,
-                is_system = true
-            };
-            return Create<LiveSplitMessage>(dataroot);
-        }
-    }
-    public class SystemMessage : ChatMessage
-    {
-        public override MessageType Type => MessageType.System;
-
-        public override string Message
-        {
-            get
-            {
-                try
-                {
-                    return Data.message_plain;
-                }
-                catch
-                {
-                    return Data.message;
-                }
-            }
-        }
-
-        public override RacetimeUser User
-        {
-            get
-            {
-                return RacetimeUser.System;
-            }
-        }
-
-        public bool IsFinishingMessage
-        {
-            get
-            {
-                return Regex.IsMatch(Message, "(finish|forfeit|comment|done)", RegexOptions.IgnoreCase);
+                return "";
             }
         }
     }
-    public class BotMessage : ChatMessage
+    public virtual RacetimeUser User
     {
-        public override MessageType Type => MessageType.Bot;
-
-        public override string Message
+        get
         {
-            get
+            try
             {
-                try
-                {
-                    return Data.message_plain;
-                }
-                catch
-                {
-                    return Data.message;
-                }
+                return RTModelBase.Create<RacetimeUser>(Data.user);
             }
-        }
-
-        public string BotName
-        {
-            get
+            catch
             {
-                try
-                {
-                    return Data.bot;
-                }
-                catch
-                {
-                    return null;
-                }
-            }
-        }
-
-        public override RacetimeUser User
-        {
-            get
-            {
-                return RacetimeUser.Bot;
+                return null;
             }
         }
     }
-
-    public class UserMessage : ChatMessage
+    public DateTime Posted
     {
-        public override MessageType Type => MessageType.User;
-
-        public override string Message
+        get
         {
-            get
+            try
             {
-                try
-                {
-                    return Data.message_plain;
-                }
-                catch
-                {
-                    return Data.message;
-                }
+                if (Data.posted_at == null)
+                    return Received;
+                return DateTime.Parse(Data.posted_at);
+            }
+            catch (Exception ex)
+            {
+                return DateTime.MaxValue;
             }
         }
     }
-    public class ErrorMessage : ChatMessage
+    public virtual bool Highlight
     {
-        public override MessageType Type => MessageType.Error;
-
-        public override bool Highlight => true;
-
-        public override RacetimeUser User
+        get
         {
-            get
+            try
             {
-                return RacetimeUser.System;
+                return Data.highlight;
             }
-        }
-
-        public override string Message
-        {
-            get
+            catch
             {
-                try
-                {
-                    string msg = "";
-                    foreach(var s in Data.errors)
-                        msg += s + " ";
-                    return msg;
-                }
-                catch
-                {
-                    return "Error in the error message";
-                }
+                return false;
             }
 
         }
     }
-    public class SplitMessage : ChatMessage
+    public bool IsSystem
     {
-        public override MessageType Type => MessageType.SplitUpdate;
-        public override string Message
+        get
         {
-            get
+            try
             {
-                try
-                {
-                    return Data.message_plain;
-                }
-                catch
-                {
-                    return Data.message;
-                }
+                return Data.is_system;
             }
-        }
-
-        public SplitUpdate SplitUpdate
-        {
-            get
+            catch
             {
-                return RTModelBase.Create<SplitUpdate>(Data);
+                return false;
+            }
+
+        }
+    }
+
+
+
+}
+
+public class LiveSplitMessage : ChatMessage
+{
+    public override MessageType Type => MessageType.LiveSplit;
+
+    public override RacetimeUser User
+    {
+        get
+        {
+            return RacetimeUser.LiveSplit;
+        }
+    }
+
+    public static LiveSplitMessage Create(string msg, bool important)
+    {
+        var dataroot = new
+        {
+            message = msg,
+            user = RacetimeUser.LiveSplit,
+            posted_at = DateTime.Now.ToString(),
+            highlight = important,
+            is_system = true
+        };
+        return Create<LiveSplitMessage>(dataroot);
+    }
+}
+public class SystemMessage : ChatMessage
+{
+    public override MessageType Type => MessageType.System;
+
+    public override string Message
+    {
+        get
+        {
+            try
+            {
+                return Data.message_plain;
+            }
+            catch
+            {
+                return Data.message;
             }
         }
     }
-    public class RaceMessage : ChatMessage
-    {
-        public override MessageType Type => MessageType.Race;
 
-        public override string Message
+    public override RacetimeUser User
+    {
+        get
         {
-            get
+            return RacetimeUser.System;
+        }
+    }
+
+    public bool IsFinishingMessage
+    {
+        get
+        {
+            return Regex.IsMatch(Message, "(finish|forfeit|comment|done)", RegexOptions.IgnoreCase);
+        }
+    }
+}
+public class BotMessage : ChatMessage
+{
+    public override MessageType Type => MessageType.Bot;
+
+    public override string Message
+    {
+        get
+        {
+            try
             {
-                try
-                {
-                    return Data.message_plain;
-                }
-                catch
-                {
-                    return Data.message;
-                }
+                return Data.message_plain;
+            }
+            catch
+            {
+                return Data.message;
+            }
+        }
+    }
+
+    public string BotName
+    {
+        get
+        {
+            try
+            {
+                return Data.bot;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+    }
+
+    public override RacetimeUser User
+    {
+        get
+        {
+            return RacetimeUser.Bot;
+        }
+    }
+}
+
+public class UserMessage : ChatMessage
+{
+    public override MessageType Type => MessageType.User;
+
+    public override string Message
+    {
+        get
+        {
+            try
+            {
+                return Data.message_plain;
+            }
+            catch
+            {
+                return Data.message;
+            }
+        }
+    }
+}
+public class ErrorMessage : ChatMessage
+{
+    public override MessageType Type => MessageType.Error;
+
+    public override bool Highlight => true;
+
+    public override RacetimeUser User
+    {
+        get
+        {
+            return RacetimeUser.System;
+        }
+    }
+
+    public override string Message
+    {
+        get
+        {
+            try
+            {
+                string msg = "";
+                foreach (var s in Data.errors)
+                    msg += s + " ";
+                return msg;
+            }
+            catch
+            {
+                return "Error in the error message";
             }
         }
 
-        public Race Race
+    }
+}
+public class SplitMessage : ChatMessage
+{
+    public override MessageType Type => MessageType.SplitUpdate;
+    public override string Message
+    {
+        get
         {
-            get
+            try
             {
-                return RTModelBase.Create<Race>(Data);
+                return Data.message_plain;
             }
+            catch
+            {
+                return Data.message;
+            }
+        }
+    }
+
+    public SplitUpdate SplitUpdate
+    {
+        get
+        {
+            return RTModelBase.Create<SplitUpdate>(Data);
+        }
+    }
+}
+public class RaceMessage : ChatMessage
+{
+    public override MessageType Type => MessageType.Race;
+
+    public override string Message
+    {
+        get
+        {
+            try
+            {
+                return Data.message_plain;
+            }
+            catch
+            {
+                return Data.message;
+            }
+        }
+    }
+
+    public Race Race
+    {
+        get
+        {
+            return RTModelBase.Create<Race>(Data);
         }
     }
 }

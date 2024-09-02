@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace LiveSplit.Racetime.Model;
 
-namespace LiveSplit.Racetime.Model
+public enum MessageType
 {
-    public enum MessageType
-    {
-        Unknown,
-        User,
-        Error,
-        Race,
-        System,
-        LiveSplit,
-        SplitUpdate,
-        Bot
-    }
+    Unknown,
+    User,
+    Error,
+    Race,
+    System,
+    LiveSplit,
+    SplitUpdate,
+    Bot
 }

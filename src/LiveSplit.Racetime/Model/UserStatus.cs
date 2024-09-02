@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace LiveSplit.Racetime.Model;
 
-namespace LiveSplit.Racetime.Model
+public enum UserStatus
 {
-    public enum UserStatus
-    {
-        Unknown,
-        NotInRace,
-        NotReady,
-        Ready,
-        Finished,
-        Disqualified,
-        Forfeit,
-        Racing
-    }
+    Unknown,
+    NotInRace,
+    NotReady,
+    Ready,
+    Finished,
+    Disqualified,
+    Forfeit,
+    Racing
 }
