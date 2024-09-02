@@ -67,7 +67,7 @@ public class RacetimeAPI : RaceProviderAPI
 
     public override void RefreshRacesListAsync()
     {
-        Task.Factory.StartNew(() => RefreshRacesList());
+        Task.Factory.StartNew(RefreshRacesList);
     }
 
     protected void RefreshRacesList()
