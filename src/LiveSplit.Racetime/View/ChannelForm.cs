@@ -88,7 +88,7 @@ public partial class ChannelForm : DarkForm
         }
         else
         {
-            chatBox.BeginInvoke((Action)(() => chatBox.Show()));
+            chatBox.BeginInvoke(() => chatBox.Show());
             retries = 0;
         }
     }
@@ -104,7 +104,7 @@ public partial class ChannelForm : DarkForm
             {
                 Text = $"{Channel.Race.Goal} [{Channel.Race.GameName}] - {Channel.Race.ChannelName}";
 
-                if (chatBox.Created == true)
+                if (chatBox.Created)
                 {
                     await Task.Delay(3000);
 
@@ -173,7 +173,7 @@ public partial class ChannelForm : DarkForm
     {
         if (InvokeRequired)
         {
-            Invoke((Action)(() => ShowWebView2DownloadDialog()));
+            Invoke(() => ShowWebView2DownloadDialog());
             return;
         }
 

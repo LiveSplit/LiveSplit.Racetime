@@ -12,7 +12,7 @@ public class RacetimeUser : RTModelBase
         {
             if (nameChcecksum == -1)
             {
-                nameChcecksum = Name.Sum(x => (int)x);
+                nameChcecksum = Name.Sum(x => x);
             }
 
             return nameChcecksum;
