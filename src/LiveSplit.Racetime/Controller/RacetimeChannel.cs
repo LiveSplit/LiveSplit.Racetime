@@ -23,7 +23,7 @@ public class RacetimeChannel
 
     public const int bufferSize = 20480;
     public const int maxBufferSize = 2097152;
-    public readonly int[] reconnectDelays = { 0, 5, 5, 10, 10, 10, 15 };
+    public readonly int[] reconnectDelays = [0, 5, 5, 10, 10, 10, 15];
 
     public string FullWebRoot => string.Format("{0}://{1}/", Properties.Resources.PROTOCOL_REST, Properties.Resources.DOMAIN);
     public string FullSocketRoot => string.Format("{0}://{1}/", Properties.Resources.PROTOCOL_WEBSOCKET, Properties.Resources.DOMAIN);
@@ -34,7 +34,7 @@ public class RacetimeChannel
     protected ITimerModel Model { get; set; }
 
     private ClientWebSocket ws;
-    protected List<ChatMessage> log = new List<ChatMessage>();
+    protected List<ChatMessage> log = [];
     public int ConnectionError { get; set; }
     public bool IsConnected { get; set; }
     public RacetimeSettings Settings { get; set; }
@@ -76,7 +76,7 @@ public class RacetimeChannel
 
         return u.Status;
     }
-    private readonly List<int> Versions = new List<int>();
+    private readonly List<int> Versions = [];
     private async Task<bool> ReceiveAndProcess()
     {
         WebSocketReceiveResult result;

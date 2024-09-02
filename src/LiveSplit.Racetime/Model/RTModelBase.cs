@@ -13,9 +13,11 @@ public abstract class RTModelBase
             return null;
         }
 
-        T item = new T();
-        item.Received = DateTime.Now;
-        item.Data = dataroot;
+        T item = new T
+        {
+            Received = DateTime.Now,
+            Data = dataroot
+        };
 
         return item;
     }
