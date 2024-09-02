@@ -79,6 +79,7 @@ public partial class ChannelForm : DarkForm
             {
                 Channel_RaceChanged(null, null);
             }
+
             if (LastRetry.AddSeconds(10) >= DateTime.Now)
             {
                 LastRetry = DateTime.Now;
@@ -120,7 +121,6 @@ public partial class ChannelForm : DarkForm
         catch { }
     }
 
-
     private void OnWebResourceRequested(object sender, CoreWebView2WebResourceRequestedEventArgs e)
     {
         // Channel.Token.AccessToken
@@ -128,7 +128,9 @@ public partial class ChannelForm : DarkForm
         {
             var headers = e.Request.Headers;
             if (e.Request.Uri.ToLower().Contains(Properties.Resources.PROTOCOL_REST.ToLower() + "://" + Properties.Resources.DOMAIN.ToLower()))
+            {
                 headers.SetHeader("Authorization", $"Bearer {Channel.Token.AccessToken}");
+            }
         }
     }
 
@@ -160,6 +162,7 @@ public partial class ChannelForm : DarkForm
                 return;
             }
         }
+
         Channel.RemoveRaceComparisons();
         Channel.Authorized -= Channel_Authorized;
         Channel.RaceChanged -= Channel_RaceChanged;
@@ -185,7 +188,9 @@ public partial class ChannelForm : DarkForm
         dialog.Buttons.Add(closeButton);
         dialog.ButtonStyle = TaskDialogButtonStyle.CommandLinks;
         if (downloadButton == dialog.Show())
+        {
             Process.Start("https://aka.ms/winui2/webview2download");
+        }
 
         Close();
     }

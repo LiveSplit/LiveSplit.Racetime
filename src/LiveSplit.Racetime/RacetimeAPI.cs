@@ -24,11 +24,13 @@ public class RacetimeAPI : RaceProviderAPI
         get
         {
             if (_instance == null)
+            {
                 _instance = new RacetimeAPI();
+            }
+
             return _instance;
         }
     }
-
 
     public RacetimeAPI()
     {
@@ -81,7 +83,6 @@ public class RacetimeAPI : RaceProviderAPI
         catch { }
     }
 
-
     protected IEnumerable<Race> GetRacesFromServer()
     {
         var request = WebRequest.Create(new Uri(BaseUri.AbsoluteUri + racesEndpoint));
@@ -99,6 +100,7 @@ public class RacetimeAPI : RaceProviderAPI
                 raceObj = RTModelBase.Create<Race>(r);
                 yield return raceObj;
             }
+
             yield break;
         }
     }

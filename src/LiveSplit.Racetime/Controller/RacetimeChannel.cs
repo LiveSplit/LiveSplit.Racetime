@@ -70,7 +70,10 @@ public class RacetimeChannel
     {
         var u = race?.Entrants?.FirstOrDefault(x => x.Name.ToLower() == RacetimeAPI.Instance.Authenticator.Identity?.Name.ToLower());
         if (u == null)
+        {
             return UserStatus.Unknown;
+        }
+
         return u.Status;
     }
     private readonly List<int> Versions = new List<int>();
@@ -89,24 +92,28 @@ public class RacetimeChannel
             {
                 if (free < 1)
                 {
-                    var newSize = buf.Length + (bufferSize);
+                    var newSize = buf.Length + bufferSize;
                     if (newSize > maxBufferSize)
                     {
                         throw new InternalBufferOverflowException();
                     }
+
                     var newBuf = new byte[newSize];
                     Array.Copy(buf, 0, newBuf, 0, read);
                     buf = newBuf;
                     free = buf.Length - read;
                 }
+
                 result = await ws?.ReceiveAsync(new ArraySegment<byte>(buf, read, free), websocket_cts?.Token ?? CancellationToken.None);
                 if (websocket_cts?.IsCancellationRequested ?? true)
+                {
                     return false;
+                }
+
                 read += result.Count;
                 free -= result.Count;
             }
             while (!result.EndOfMessage);
-
 
             msg = Encoding.UTF8.GetString(buf, 0, read);
             RawMessageReceived?.Invoke(this, msg);
@@ -114,7 +121,11 @@ public class RacetimeChannel
         catch (InternalBufferOverflowException)
         {
             //flush socket
-            while (!(result = await ws?.ReceiveAsync(new ArraySegment<byte>(buf, 0, buf.Length), websocket_cts?.Token ?? CancellationToken.None)).EndOfMessage) ;
+            while (!(result = await ws?.ReceiveAsync(new ArraySegment<byte>(buf, 0, buf.Length), websocket_cts?.Token ?? CancellationToken.None)).EndOfMessage)
+            {
+                ;
+            }
+
             return false;
         }
         catch
@@ -158,9 +169,9 @@ public class RacetimeChannel
             }
         }
         catch { }
+
         return true;
     }
-
 
     public async Task RunAsync(string id)
     {
@@ -169,6 +180,7 @@ public class RacetimeChannel
         {
             return;
         }
+
         websocket_cts = new CancellationTokenSource();
         var Authenticator = RacetimeAPI.Instance.Authenticator;
 
@@ -234,6 +246,7 @@ public class RacetimeChannel
                     SendSystemMessage("Unable to obtain Race information. Try reloading");
                     goto cleanup;
                 }
+
                 try
                 {
                     var rf = new StandardComparisonGeneratorsFactory();
@@ -268,7 +281,6 @@ public class RacetimeChannel
                 }
             }
 
-
             switch (ws.State)
             {
                 case WebSocketState.CloseSent:
@@ -279,11 +291,14 @@ public class RacetimeChannel
                 default:
                 case WebSocketState.Aborted:
                     if (!(websocket_cts?.IsCancellationRequested ?? true))
+                    {
                         ConnectionError++;
+                    }
 
                     break;
             }
         }
+
         ws = null;
 
     cleanup:
@@ -296,9 +311,11 @@ public class RacetimeChannel
             goto start;
         }
         else
+        {
             SendSystemMessage("Disconnect");
+        }
 
-        cleanup_silent:
+    cleanup_silent:
         websocket_cts?.Dispose();
         websocket_cts = null;
         Disconnected?.Invoke(this, new EventArgs());
@@ -311,8 +328,9 @@ public class RacetimeChannel
         //ignore double tap prevention when updating race data
         var m = Model;
         if (m is DoubleTapPrevention)
+        {
             m = ((DoubleTapPrevention)Model).InternalModel;
-
+        }
 
         RaceState r = Race?.State ?? RaceState.Unknown;
         RaceState nr = msg.Race?.State ?? RaceState.Unknown;
@@ -324,7 +342,6 @@ public class RacetimeChannel
             Race = msg.Race;
             UpdateRaceComparisons(Race);
         }
-
 
         //update only neccessary if the state of the player and/or the race has changed
         if ((r != nr) || (u != nu))
@@ -351,7 +368,9 @@ public class RacetimeChannel
                         catch { }
                     }
                     else if (m.CurrentState.CurrentPhase == TimerPhase.Paused)
+                    {
                         m.Pause();
+                    }
                     else if (m.CurrentState.CurrentPhase == TimerPhase.NotRunning)
                     {
                         m.CurrentState.Run.Offset = DateTime.UtcNow.Subtract(Race.StartedAt);
@@ -362,7 +381,6 @@ public class RacetimeChannel
                     {
                         m.CurrentState.Run.Offset = Offset;
                     }
-
                 }
 
                 //Nothing has started yet but we just want to prep the countdown
@@ -372,18 +390,22 @@ public class RacetimeChannel
                     {
                         Offset = m.CurrentState.Run.Offset;
                     }
+
                     m.CurrentState.Run.Offset = Race.StartDelay.Negate();
                     m.CurrentState.AdjustedStartTime = TimeStamp.Now - m.CurrentState.Run.Offset;
                 }
-                else if (nr == RaceState.Started && ((nu == UserStatus.Finished || nu == UserStatus.Forfeit) && (u == UserStatus.Racing || u == UserStatus.Finished)))
+                else if (nr == RaceState.Started && (nu == UserStatus.Finished || nu == UserStatus.Forfeit) && (u == UserStatus.Racing || u == UserStatus.Finished))
                 {
                     try
                     {
                         current_split = m.CurrentState.CurrentSplitIndex;
                         for (int i = 0; i < 300; i++)
+                        {
                             m.SkipSplit();
+                        }
                     }
                     catch { }
+
                     m.Split();
                 }
             }
@@ -418,6 +440,7 @@ public class RacetimeChannel
         {
             segment = run.LastOrDefault(x => x.Name.Trim().ToLower() == split.SplitName && x.Comparisons[comparisonName][TimingMethod.RealTime] != null);
         }
+
         if (split.IsFinish)
         {
             segment = run.Last();
@@ -438,7 +461,9 @@ public class RacetimeChannel
             foreach (var entrant in race.Entrants)
             {
                 if (entrant.Name != Username)
+                {
                     AddComparison(entrant.FullName);
+                }
             }
         }
         catch (Exception ex)
@@ -461,7 +486,9 @@ public class RacetimeChannel
     public void RemoveRaceComparisons()
     {
         if (RacetimeComparisonGenerator.IsRaceComparison(Model.CurrentState.CurrentComparison))
+        {
             Model.CurrentState.CurrentComparison = Run.PersonalBestComparisonName;
+        }
 
         for (var ind = 0; ind < Model.CurrentState.Run.ComparisonGenerators.Count; ind++)
         {
@@ -471,13 +498,16 @@ public class RacetimeChannel
                 ind--;
             }
         }
+
         foreach (var segment in Model.CurrentState.Run)
         {
             for (var ind = 0; ind < segment.Comparisons.Count; ind++)
             {
                 var comparison = segment.Comparisons.ElementAt(ind);
                 if (RacetimeComparisonGenerator.IsRaceComparison(comparison.Key))
+                {
                     segment.Comparisons[comparison.Key] = default(Time);
+                }
             }
         }
     }
@@ -499,15 +529,16 @@ public class RacetimeChannel
                 yield return RTModelBase.Create<LiveSplitMessage>(m.message);
                 break;
         }
+
         yield break;
     }
-
-
 
     private void State_OnReset(object sender, TimerPhase value)
     {
         if (PersonalStatus == UserStatus.Racing)
+        {
             SendChannelMessage(".forfeit");
+        }
     }
 
     private void State_OnUndoSplit(object sender, EventArgs e)
@@ -515,7 +546,9 @@ public class RacetimeChannel
         if (Model.CurrentState.CurrentSplitIndex == Model.CurrentState.Run.Count - 1)
         {
             if (PersonalStatus != UserStatus.Racing)
+            {
                 Undone();
+            }
         }
 
         if (PersonalStatus == UserStatus.Racing)
@@ -550,8 +583,11 @@ public class RacetimeChannel
                 SendChannelCommand(cmd.ToString());
             }
         }
+
         if (Model.CurrentState.CurrentSplitIndex >= Model.CurrentState.Run.Count && PersonalStatus == UserStatus.Racing)
+        {
             SendChannelMessage(".done");
+        }
     }
 
     public event EventHandler ChannelJoined;
@@ -568,9 +604,6 @@ public class RacetimeChannel
     public event EventHandlerT<dynamic> DeletedMessage;
     public event EventHandlerT<dynamic> PurgedMessage;
     public event EventHandler Authorized;
-
-
-
 
     public async void Connect(string id)
     {
@@ -599,6 +632,7 @@ public class RacetimeChannel
             websocket_cts?.Cancel();
             websocket_cts = null;
         }
+
         reconnect_cts?.Cancel();
         reconnect_cts = null;
 
@@ -606,7 +640,6 @@ public class RacetimeChannel
         Model.OnSplit -= State_OnSplit;
         Model.OnReset -= State_OnReset;
         Model.OnUndoSplit -= State_OnUndoSplit;
-
 
     }
 
@@ -617,7 +650,6 @@ public class RacetimeChannel
             Model.Reset();
         }
     }
-
 
     private readonly Regex cmdRegex = new Regex(@"^\.([a-z]+)\s*?(.+)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -659,7 +691,9 @@ public class RacetimeChannel
             try
             {
                 if (websocket_cts != null)
+                {
                     await ws.SendAsync(bytesToSend, WebSocketMessageType.Text, true, websocket_cts.Token);
+                }
             }
             catch
             {

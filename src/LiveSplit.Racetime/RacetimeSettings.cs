@@ -59,5 +59,4 @@ public class RacetimeSettings : RaceProviderSettings
             HideResults = HideResults
         };
     }
-
 }

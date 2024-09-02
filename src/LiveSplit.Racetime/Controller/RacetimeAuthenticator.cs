@@ -23,7 +23,6 @@ public class RacetimeAuthenticator
     private TcpListener localEndpoint;
     protected string RedirectUri => $"http://{s.RedirectAddress}:{s.RedirectPort}/";
 
-
     public string AccessToken
     {
         get => WebCredentials.RacetimeAccessToken;
@@ -38,7 +37,7 @@ public class RacetimeAuthenticator
     public string Error { get; protected set; }
     public DateTime TokenExpireDate { get; protected set; }
     public bool IsAuthenticated => Code != null;
-    public bool IsAuthorized => (AccessToken != null);
+    public bool IsAuthorized => AccessToken != null;
 
     public bool IsAuthorizing { get; set; }
 
@@ -62,14 +61,12 @@ public class RacetimeAuthenticator
         return true;
     }
 
-
     public RacetimeAuthenticator(IAuthentificationSettings s)
     {
         this.s = s;
     }
 
     private readonly Regex parameterRegex = new Regex(@"(\w+)=([-_A-Z0-9]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
 
     private static string ReadResponse(TcpClient client)
     {
@@ -86,7 +83,9 @@ public class RacetimeAuthenticator
                 {
                     var numberOfBytesRead = stream.Read(readBuffer, 0, readBuffer.Length);
                     if (numberOfBytesRead <= 0)
+                    {
                         break;
+                    }
 
                     inStream.Write(readBuffer, 0, numberOfBytesRead);
                 }
@@ -140,12 +139,15 @@ public class RacetimeAuthenticator
             {
 
                 if (ex.InnerException is SocketException)
+                {
                     throw;
+                }
 
                 AccessToken = null;
                 return false;
             }
         }
+
         return false;
     }
 
@@ -167,6 +169,7 @@ public class RacetimeAuthenticator
                 return true;
             }
         }
+
         return false;
     }
 
@@ -176,7 +179,6 @@ public class RacetimeAuthenticator
         Tuple<int, dynamic> result;
         verifier = GenerateRandomBase64Data(32);
 
-
         request = $"code={Code}&redirect_uri={RedirectUri}&client_id={s.ClientID}&code_verifier={verifier}&client_secret={s.ClientSecret}&scope={s.Scopes}&grant_type=authorization_code";
 
         result = await RestRequest(s.TokenEndpoint, request);
@@ -185,12 +187,12 @@ public class RacetimeAuthenticator
             Error = "Access has been revoked. Reauthentication required";
             return false;
         }
+
         if (result.Item1 != 200)
         {
             Error = "Authentication successful, but access wasn't granted by the server";
             return false;
         }
-
 
         AccessToken = result.Item2.access_token;
         RefreshToken = result.Item2.refresh_token;
@@ -201,6 +203,7 @@ public class RacetimeAuthenticator
             Error = "Final access check failed. Server responded with success, but hasn't delivered a valid Token.";
             return false;
         }
+
         return true;
     }
 
@@ -238,7 +241,6 @@ public class RacetimeAuthenticator
             localEndpoint.Start();
 
             request = $"{s.AuthServer}{s.AuthorizationEndpoint}?response_type=code&client_id={s.ClientID}&scope={s.Scopes}&redirect_uri={RedirectUri}&state={state}&code_challenge={challenge}&code_challenge_method={s.ChallengeMethod}";
-
 
             Task<TcpClient> serverConnectionTask = localEndpoint.AcceptTcpClientAsync();
 
@@ -285,6 +287,7 @@ public class RacetimeAuthenticator
                 await SendRedirectAsync(serverConnection, s.SuccessEndpoint);
                 serverConnection.Close();
             }
+
             StopLocalEndpoint();
         }
         catch (ObjectDisposedException)
@@ -300,11 +303,12 @@ public class RacetimeAuthenticator
         return Error == null ? 200 : 500;
     }
 
-
     public async Task<AuthResult> Authorize()
     {
         if (IsAuthorizing)
+        {
             return AuthResult.Pending;
+        }
 
         IsAuthorizing = true;
         Error = null;
@@ -333,14 +337,18 @@ public class RacetimeAuthenticator
             goto failure;
         }
 
-
         //1st: Try to get User information
         try
         {
             if (TryGetUserInfo())
+            {
                 goto success;
+            }
         }
-        catch (SocketException) { goto failure; }
+        catch (SocketException)
+        {
+            goto failure;
+        }
         catch { }
 
         //2nd: if this fails, try to renew access 
@@ -348,11 +356,15 @@ public class RacetimeAuthenticator
         {
             //if there is a refresh token
             if (await TryRefreshAccess())
+            {
                 goto start;
+            }
 
             //or not
             if (await TryGetAccess())
+            {
                 goto start;
+            }
         }
         catch { }
 
@@ -372,14 +384,18 @@ public class RacetimeAuthenticator
 
         //safety safe for a theoretical endless loop
         if (secondRun)
+        {
             goto failure;
+        }
+
         secondRun = true;
 
         if (Error == null)
+        {
             goto start;
+        }
 
-
-        failure:
+    failure:
         StopPendingAuthRequest();
         ResetTokens();
         return AuthResult.Failure;
@@ -453,5 +469,4 @@ public class RacetimeAuthenticator
 
         return new Tuple<int, dynamic>(500, null);
     }
-
 }

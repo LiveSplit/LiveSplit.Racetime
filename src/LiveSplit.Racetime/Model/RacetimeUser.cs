@@ -11,7 +11,10 @@ public class RacetimeUser : RTModelBase
         get
         {
             if (nameChcecksum == -1)
+            {
                 nameChcecksum = Name.Sum(x => (int)x);
+            }
+
             return nameChcecksum;
         }
     }
@@ -31,7 +34,9 @@ public class RacetimeUser : RTModelBase
             UserRole r = UserRole.Regular;
 
             if (Data.user.flair == null)
+            {
                 return UserRole.Unknown;
+            }
 
             string[] flairs = Data.user.flair.ToString().Split(' ');
             foreach (string f in flairs)
@@ -46,6 +51,7 @@ public class RacetimeUser : RTModelBase
                     case "anonymous": r |= UserRole.Anonymous; break;
                 }
             }
+
             return r;
         }
     }
@@ -55,7 +61,9 @@ public class RacetimeUser : RTModelBase
         {
             UserStatus s = UserStatus.Unknown;
             if (Data.status == null)
+            {
                 return UserStatus.Unknown;
+            }
 
             switch (Data.status.value)
             {
@@ -67,6 +75,7 @@ public class RacetimeUser : RTModelBase
                 case "dq": s = UserStatus.Disqualified; break;
                 default: s = UserStatus.Unknown; break;
             }
+
             return s;
         }
     }
@@ -82,6 +91,7 @@ public class RacetimeUser : RTModelBase
                 {
                     return dt.ToUniversalTime();
                 }
+
                 return DateTime.MaxValue;
             }
             catch (Exception ex)
@@ -98,7 +108,10 @@ public class RacetimeUser : RTModelBase
             try
             {
                 if (Data.place != null)
+                {
                     return Data.place;
+                }
+
                 return 0;
             }
             catch
@@ -169,7 +182,6 @@ public class RacetimeUser : RTModelBase
     public static RacetimeUser LiveSplit = CreateBot("LiveSplit", "system staff moderator monitor");
     public static RacetimeUser Anonymous = CreateBot("Anonymous", "anonymous");
 
-
     public static RacetimeUser CreateBot(string botname, string flairs)
     {
         var dataroot = new
@@ -180,5 +192,4 @@ public class RacetimeUser : RTModelBase
         };
         return Create<RacetimeUser>(dataroot);
     }
-
 }

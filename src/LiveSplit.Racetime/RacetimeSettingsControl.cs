@@ -10,10 +10,12 @@ public partial class RacetimeSettingsControl : UserControl
     public RacetimeSettings Settings
     {
         get => settings;
-        set { settings = value; RacetimeSettingsControl_VisibleChanged(this, null); }
+        set
+        {
+            settings = value;
+            RacetimeSettingsControl_VisibleChanged(this, null);
+        }
     }
-
-
 
     public RacetimeSettingsControl()
     {

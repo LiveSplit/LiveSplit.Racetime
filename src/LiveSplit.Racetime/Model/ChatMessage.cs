@@ -42,7 +42,10 @@ public abstract class ChatMessage : RTModelBase
             try
             {
                 if (Data.posted_at == null)
+                {
                     return Received;
+                }
+
                 return DateTime.Parse(Data.posted_at);
             }
             catch (Exception ex)
@@ -63,7 +66,6 @@ public abstract class ChatMessage : RTModelBase
             {
                 return false;
             }
-
         }
     }
     public bool IsSystem
@@ -78,12 +80,8 @@ public abstract class ChatMessage : RTModelBase
             {
                 return false;
             }
-
         }
     }
-
-
-
 }
 
 public class LiveSplitMessage : ChatMessage
@@ -200,7 +198,10 @@ public class ErrorMessage : ChatMessage
             {
                 string msg = "";
                 foreach (var s in Data.errors)
+                {
                     msg += s + " ";
+                }
+
                 return msg;
             }
             catch
@@ -208,7 +209,6 @@ public class ErrorMessage : ChatMessage
                 return "Error in the error message";
             }
         }
-
     }
 }
 public class SplitMessage : ChatMessage

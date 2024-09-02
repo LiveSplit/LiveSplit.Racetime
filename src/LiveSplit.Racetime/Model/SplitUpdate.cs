@@ -13,7 +13,10 @@ public class SplitUpdate : RTModelBase
         get
         {
             if (Data.split_time == "-")
+            {
                 return null;
+            }
+
             return TimeSpanParser.Parse(Data.split_time);
         }
     }

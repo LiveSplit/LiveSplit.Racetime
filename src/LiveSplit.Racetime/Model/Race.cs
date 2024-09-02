@@ -115,7 +115,10 @@ public class Race : RTModelBase, IRaceInfo
             try
             {
                 if (Data.started_at == null)
+                {
                     return DateTime.MaxValue;
+                }
+
                 return DateTime.Parse(Data.started_at).ToUniversalTime();
             }
             catch
@@ -125,7 +128,6 @@ public class Race : RTModelBase, IRaceInfo
         }
     }
 
-
     public DateTime OpenedAt
     {
         get
@@ -133,7 +135,10 @@ public class Race : RTModelBase, IRaceInfo
             try
             {
                 if (Data.opened_at == null)
+                {
                     return DateTime.MaxValue;
+                }
+
                 return DateTime.Parse(Data.opened_at);
             }
             catch
@@ -158,7 +163,6 @@ public class Race : RTModelBase, IRaceInfo
     public int Starttime => StartedAt == DateTime.MaxValue ? 0 : (int)(StartedAt - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
 
     int IRaceInfo.State => (State == RaceState.Open || State == RaceState.OpenInviteOnly) ? 1 : (State == RaceState.Started ? 3 : 42);
-
 
     public bool IsParticipant(string username)
     {

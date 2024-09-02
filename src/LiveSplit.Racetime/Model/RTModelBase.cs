@@ -9,7 +9,9 @@ public abstract class RTModelBase
     public static T Create<T>(dynamic dataroot) where T : RTModelBase, new()
     {
         if (dataroot == null)
+        {
             return null;
+        }
 
         T item = new T();
         item.Received = DateTime.Now;
@@ -24,5 +26,4 @@ public abstract class RTModelBase
     {
 
     }
-
 }
