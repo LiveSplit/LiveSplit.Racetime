@@ -347,7 +347,7 @@ public class RacetimeChannel
         if ((r != nr) || (u != nu))
         {
             //we are (now) part of the race
-            if (nu != UserStatus.NotInRace && nu != UserStatus.Unknown)
+            if (nu is not UserStatus.NotInRace and not UserStatus.Unknown)
             {
                 //the race is starting
                 if ((r == RaceState.Open || r == RaceState.OpenInviteOnly) && nr == RaceState.Starting)
@@ -384,7 +384,7 @@ public class RacetimeChannel
                 }
 
                 //Nothing has started yet but we just want to prep the countdown
-                else if ((nr == RaceState.Open || nr == RaceState.OpenInviteOnly) && (nr != RaceState.Starting || nr != RaceState.Started))
+                else if (nr is (RaceState.Open or RaceState.OpenInviteOnly) and (not RaceState.Starting or not RaceState.Started))
                 {
                     if (Offset.TotalMilliseconds == 0)
                     {
