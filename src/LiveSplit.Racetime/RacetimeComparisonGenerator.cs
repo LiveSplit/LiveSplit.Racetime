@@ -4,7 +4,7 @@ using LiveSplit.Options;
 
 namespace LiveSplit.Racetime;
 
-class RacetimeComparisonGenerator : IComparisonGenerator
+internal class RacetimeComparisonGenerator : IComparisonGenerator
 {
     public IRun Run { get; set; }
     public string Name { get; protected set; }

@@ -9,7 +9,7 @@ namespace LiveSplit.Racetime;
 
 public class RacetimeSettings : RaceProviderSettings
 {
-    private RacetimeSettingsControl control;
+    private readonly RacetimeSettingsControl control;
 
     public override string Name { get => "LiveSplit.Racetime.dll"; set { } }
 

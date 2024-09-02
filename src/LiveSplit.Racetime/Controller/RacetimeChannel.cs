@@ -50,8 +50,9 @@ public class RacetimeChannel
     public bool Invited = false;
     public TimeSpan Offset { get; set; }
     public RacetimeAuthenticator Token { get; set; }
-    CancellationTokenSource websocket_cts;
-    CancellationTokenSource reconnect_cts;
+
+    private CancellationTokenSource websocket_cts;
+    private CancellationTokenSource reconnect_cts;
 
     public RacetimeChannel(LiveSplitState state, ITimerModel model, RacetimeSettings settings)
     {
@@ -78,7 +79,7 @@ public class RacetimeChannel
             return UserStatus.Unknown;
         return u.Status;
     }
-    private List<int> Versions = new List<int>();
+    private readonly List<int> Versions = new List<int>();
     private async Task<bool> ReceiveAndProcess()
     {
         WebSocketReceiveResult result;
@@ -624,7 +625,7 @@ public class RacetimeChannel
     }
 
 
-    private Regex cmdRegex = new Regex(@"^\.([a-z]+)\s*?(.+)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private readonly Regex cmdRegex = new Regex(@"^\.([a-z]+)\s*?(.+)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     public DynamicJsonObject CreateCommand(string message)
     {
