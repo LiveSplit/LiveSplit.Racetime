@@ -86,8 +86,7 @@ public class RacetimeUser : RTModelBase
         {
             try
             {
-                DateTime dt;
-                if (DateTime.TryParse(Data.finished_at, out dt))
+                if (DateTime.TryParse(Data.finished_at, out DateTime dt))
                 {
                     return dt.ToUniversalTime();
                 }
