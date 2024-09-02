@@ -65,17 +65,16 @@ public class RacetimeUser : RTModelBase
                 return UserStatus.Unknown;
             }
 
-            switch (Data.status.value)
+            s = Data.status.value switch
             {
-                case "not_ready": s = UserStatus.NotReady; break;
-                case "ready": s = UserStatus.Ready; break;
-                case "done": s = UserStatus.Finished; break;
-                case "in_progress": s = UserStatus.Racing; break;
-                case "dnf": s = UserStatus.Forfeit; break;
-                case "dq": s = UserStatus.Disqualified; break;
-                default: s = UserStatus.Unknown; break;
-            }
-
+                "not_ready" => UserStatus.NotReady,
+                "ready" => UserStatus.Ready,
+                "done" => UserStatus.Finished,
+                "in_progress" => UserStatus.Racing,
+                "dnf" => UserStatus.Forfeit,
+                "dq" => UserStatus.Disqualified,
+                _ => UserStatus.Unknown,
+            };
             return s;
         }
     }

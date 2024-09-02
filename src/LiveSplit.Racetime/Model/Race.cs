@@ -96,16 +96,16 @@ public class Race : RTModelBase, IRaceInfo
     {
         get
         {
-            switch (Data.status.value)
+            return Data.status.value switch
             {
-                case "open": return RaceState.Open;
-                case "invitational": return RaceState.OpenInviteOnly;
-                case "pending": return RaceState.Starting;
-                case "in_progress": return RaceState.Started;
-                case "finished": return RaceState.Ended;
-                case "cancelled": return RaceState.Cancelled;
-                default: return RaceState.Unknown;
-            }
+                "open" => RaceState.Open,
+                "invitational" => RaceState.OpenInviteOnly,
+                "pending" => RaceState.Starting,
+                "in_progress" => RaceState.Started,
+                "finished" => RaceState.Ended,
+                "cancelled" => RaceState.Cancelled,
+                _ => RaceState.Unknown,
+            };
         }
     }
     public DateTime StartedAt
