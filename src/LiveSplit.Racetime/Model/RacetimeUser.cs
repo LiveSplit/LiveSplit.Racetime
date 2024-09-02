@@ -22,6 +22,10 @@ public class RacetimeUser : RTModelBase
     {
         return Name.ToLower() == ((RacetimeUser)obj)?.Name?.ToLower();
     }
+    public override int GetHashCode()
+    {
+        return Name.ToLower().GetHashCode();
+    }
     public string ID => Data.id;
     public string FullName => Data.full_name;
     public string Name => Data.name ?? "";

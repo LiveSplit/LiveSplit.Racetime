@@ -182,23 +182,23 @@ public class RacetimeChannel
         }
 
         websocket_cts = new CancellationTokenSource();
-        RacetimeAuthenticator Authenticator = RacetimeAPI.Instance.Authenticator;
+        RacetimeAuthenticator authenticator = RacetimeAPI.Instance.Authenticator;
 
         using (ws = new ClientWebSocket())
         {
             IsConnected = true;
 
-            AuthResult r = await Authenticator.Authorize();
-            Username = Authenticator.Identity?.Name;
-            UserID = Authenticator.Identity?.ID;
+            AuthResult r = await authenticator.Authorize();
+            Username = authenticator.Identity?.Name;
+            UserID = authenticator.Identity?.ID;
             switch (r)
             {
                 case AuthResult.Success:
-                    SendSystemMessage($"Authorization successful. Hello, {Authenticator.Identity?.Name}");
+                    SendSystemMessage($"Authorization successful. Hello, {authenticator.Identity?.Name}");
                     Authorized?.Invoke(this, null);
                     break;
                 case AuthResult.Failure:
-                    SendSystemMessage(Authenticator.Error, true);
+                    SendSystemMessage(authenticator.Error, true);
                     AuthenticationFailed?.Invoke(this, new EventArgs());
                     ConnectionError++;
                     goto cleanup;
@@ -207,7 +207,7 @@ public class RacetimeChannel
                     ConnectionError = -1;
                     goto cleanup;
                 case AuthResult.Pending:
-                    Authenticator.StopPendingAuthRequest();
+                    authenticator.StopPendingAuthRequest();
                     IsConnected = false;
                     goto start;
                 case AuthResult.Stale:
@@ -216,8 +216,8 @@ public class RacetimeChannel
             }
 
             //opening the socket
-            ws.Options.SetRequestHeader("Authorization", $"Bearer {Authenticator.AccessToken}");
-            Token = Authenticator;
+            ws.Options.SetRequestHeader("Authorization", $"Bearer {authenticator.AccessToken}");
+            Token = authenticator;
             try
             {
                 await ws.ConnectAsync(new Uri(FullSocketRoot + "ws/o/race/" + id), websocket_cts.Token);
