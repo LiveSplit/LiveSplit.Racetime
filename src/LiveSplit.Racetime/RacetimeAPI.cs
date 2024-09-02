@@ -23,10 +23,7 @@ public class RacetimeAPI : RaceProviderAPI
     {
         get
         {
-            if (_instance == null)
-            {
-                _instance = new RacetimeAPI();
-            }
+            _instance ??= new RacetimeAPI();
 
             return _instance;
         }
