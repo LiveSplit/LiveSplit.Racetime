@@ -237,7 +237,9 @@ public class RacetimeChannel
                 try
                 {
                     var bytesToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes("{ \"action\":\"getrace\" }"));
+#pragma warning disable CS4014 // Consider applying the 'await' operator to the result of the call.
                     ws.SendAsync(bytesToSend, WebSocketMessageType.Text, true, CancellationToken.None);
+#pragma warning restore CS4014
                     await ReceiveAndProcess();
 
                 }
@@ -255,7 +257,9 @@ public class RacetimeChannel
                     {
                         SendSystemMessage("Loading chat history...");
                         var otherBytesToSend = new ArraySegment<byte>(Encoding.UTF8.GetBytes("{ \"action\":\"gethistory\" }"));
+#pragma warning disable CS4014 // Consider applying the 'await' operator to the result of the call.
                         ws.SendAsync(otherBytesToSend, WebSocketMessageType.Text, true, CancellationToken.None);
+#pragma warning restore CS4014
                         await ReceiveAndProcess();
 
                     }
@@ -594,16 +598,18 @@ public class RacetimeChannel
     public event EventHandler Disconnected;
     public event EventHandler GoalChanged;
     public event EventHandler RaceChanged;
-    public event EventHandler Kicked;
     public event EventHandler AuthenticationFailed;
     public event EventHandlerT<string> RawMessageReceived;
     public event EventHandlerT<RaceState> StateChanged;
     public event EventHandler UserListRefreshed;
     public event EventHandlerT<IEnumerable<ChatMessage>> MessageReceived;
+    public event EventHandler Authorized;
+#pragma warning disable CS0067 // The event is never used.
+    public event EventHandler Kicked;
     public event EventHandler RequestOutputReset;
     public event EventHandlerT<dynamic> DeletedMessage;
     public event EventHandlerT<dynamic> PurgedMessage;
-    public event EventHandler Authorized;
+#pragma warning restore CS0067
 
     public async void Connect(string id)
     {
