@@ -1,67 +1,62 @@
-﻿using LiveSplit.Options;
-using LiveSplit.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows.Forms;
 using System.Xml;
 
-namespace LiveSplit.Racetime
+using LiveSplit.Options;
+using LiveSplit.UI;
+
+namespace LiveSplit.Racetime;
+
+public class RacetimeSettings : RaceProviderSettings
 {
-    public class RacetimeSettings : RaceProviderSettings
+    private readonly RacetimeSettingsControl control;
+
+    public override string Name { get => "LiveSplit.Racetime.dll"; set { } }
+
+    public override string DisplayName => "racetime.gg";
+
+    public bool LoadChatHistory { get; set; } = true;
+    public bool HideResults { get; set; } = false;
+
+    public override string WebsiteLink => "https://racetime.gg";
+
+    public override string RulesLink => "https://racetime.gg/about/rules";
+
+    public RacetimeSettings()
     {
-        private RacetimeSettingsControl control;
+        control = new RacetimeSettingsControl();
+    }
 
-        public override string Name { get => "LiveSplit.Racetime.dll"; set { } }
+    public override Control GetSettingsControl()
+    {
+        control.Settings = this;
+        return control;
+    }
 
-        public override string DisplayName => "racetime.gg";
+    public override void FromXml(XmlElement element, Version version)
+    {
+        base.FromXml(element, version);
+        LoadChatHistory = SettingsHelper.ParseBool(element["LoadChatHistory"], true);
+        HideResults = SettingsHelper.ParseBool(element["HideResults"], true);
+    }
 
-        public bool LoadChatHistory { get; set; } = true;
-        public bool HideResults { get; set; } = false;
+    public override XmlElement ToXml(XmlDocument document)
+    {
+        XmlElement e = base.ToXml(document);
 
-        public override string WebsiteLink => "https://racetime.gg";
+        SettingsHelper.CreateSetting(document, e, "LoadChatHistory", LoadChatHistory);
+        SettingsHelper.CreateSetting(document, e, "HideResults", HideResults);
 
-        public override string RulesLink => "https://racetime.gg/about/rules";
+        return e;
+    }
 
-        public RacetimeSettings()
+    public override object Clone()
+    {
+        return new RacetimeSettings()
         {
-            control = new RacetimeSettingsControl();
-        }
-
-        public override Control GetSettingsControl()
-        {
-            control.Settings = this;
-            return control;
-        }
-
-        public override void FromXml(XmlElement element, Version version)
-        {
-            base.FromXml(element, version);
-            LoadChatHistory = SettingsHelper.ParseBool(element["LoadChatHistory"], true);
-            HideResults = SettingsHelper.ParseBool(element["HideResults"], true);
-        }
-
-        public override XmlElement ToXml(XmlDocument document)
-        {
-            XmlElement e = base.ToXml(document);
-
-            SettingsHelper.CreateSetting(document, e, "LoadChatHistory", LoadChatHistory);
-            SettingsHelper.CreateSetting(document, e, "HideResults", HideResults);
-
-            return e;
-        }
-
-        public override object Clone()
-        {
-            return new RacetimeSettings()
-            {
-                Enabled = Enabled,
-                LoadChatHistory = LoadChatHistory,
-                HideResults = HideResults
-            };
-        }
-
+            Enabled = Enabled,
+            LoadChatHistory = LoadChatHistory,
+            HideResults = HideResults
+        };
     }
 }
