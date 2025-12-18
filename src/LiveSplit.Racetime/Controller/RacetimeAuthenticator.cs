@@ -152,13 +152,12 @@ public class RacetimeAuthenticator
 
     private async Task<bool> TryRefreshAccess()
     {
-        string request, verifier;
+        string request;
         Tuple<int, dynamic> result;
-        verifier = GenerateRandomBase64Data(32);
 
         if (RefreshToken != null)
         {
-            request = $"code={Code}&redirect_uri={RedirectUri}&client_id={s.ClientID}&code_verifier={verifier}&client_secret={s.ClientSecret}&refresh_token={RefreshToken}&grant_type=refresh_token";
+            request = $"code={Code}&redirect_uri={RedirectUri}&client_id={s.ClientID}&client_secret={s.ClientSecret}&refresh_token={RefreshToken}&grant_type=refresh_token";
 
             result = await RestRequest(s.TokenEndpoint, request);
             if (result.Item1 == 200)
