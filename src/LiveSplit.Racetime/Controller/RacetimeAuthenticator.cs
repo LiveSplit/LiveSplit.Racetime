@@ -103,8 +103,9 @@ public class RacetimeAuthenticator
     {
         byte[] bytes = Encoding.ASCII.GetBytes(inputStirng);
         var sha256 = new SHA256Managed();
-        sha256.ComputeHash(bytes);
-        string base64 = Convert.ToBase64String(bytes);
+        var hash = sha256.ComputeHash(bytes);
+
+        string base64 = Convert.ToBase64String(hash);
         base64 = base64.Replace("+", "-");
         base64 = base64.Replace("/", "_");
         base64 = base64.Replace("=", "");
