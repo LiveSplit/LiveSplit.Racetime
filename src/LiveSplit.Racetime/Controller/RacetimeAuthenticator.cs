@@ -17,6 +17,8 @@ public enum AuthResult { Pending, Success, Failure, Cancelled, Stale }
 
 public class RacetimeAuthenticator
 {
+    private string _verifier = string.Empty;
+
     protected readonly IAuthentificationSettings s;
 
     protected string Code { get; set; }
@@ -103,8 +105,9 @@ public class RacetimeAuthenticator
     {
         byte[] bytes = Encoding.ASCII.GetBytes(inputStirng);
         var sha256 = new SHA256Managed();
-        sha256.ComputeHash(bytes);
-        string base64 = Convert.ToBase64String(bytes);
+        var hash = sha256.ComputeHash(bytes);
+
+        string base64 = Convert.ToBase64String(hash);
         base64 = base64.Replace("+", "-");
         base64 = base64.Replace("/", "_");
         base64 = base64.Replace("=", "");
@@ -151,13 +154,12 @@ public class RacetimeAuthenticator
 
     private async Task<bool> TryRefreshAccess()
     {
-        string request, verifier;
+        string request;
         Tuple<int, dynamic> result;
-        verifier = GenerateRandomBase64Data(32);
 
         if (RefreshToken != null)
         {
-            request = $"code={Code}&redirect_uri={RedirectUri}&client_id={s.ClientID}&code_verifier={verifier}&client_secret={s.ClientSecret}&refresh_token={RefreshToken}&grant_type=refresh_token";
+            request = $"code={Code}&redirect_uri={RedirectUri}&client_id={s.ClientID}&client_secret={s.ClientSecret}&refresh_token={RefreshToken}&grant_type=refresh_token";
 
             result = await RestRequest(s.TokenEndpoint, request);
             if (result.Item1 == 200)
@@ -173,11 +175,10 @@ public class RacetimeAuthenticator
 
     private async Task<bool> TryGetAccess()
     {
-        string request, verifier;
+        string request;
         Tuple<int, dynamic> result;
-        verifier = GenerateRandomBase64Data(32);
 
-        request = $"code={Code}&redirect_uri={RedirectUri}&client_id={s.ClientID}&code_verifier={verifier}&client_secret={s.ClientSecret}&scope={s.Scopes}&grant_type=authorization_code";
+        request = $"code={Code}&redirect_uri={RedirectUri}&client_id={s.ClientID}&code_verifier={_verifier}&client_secret={s.ClientSecret}&scope={s.Scopes}&grant_type=authorization_code";
 
         result = await RestRequest(s.TokenEndpoint, request);
         if (result.Item1 == 400)
@@ -223,13 +224,15 @@ public class RacetimeAuthenticator
 
     private async Task<int> TryGetAuthenticated()
     {
-        string reqState, state, verifier = null, challenge, request, response;
+        string reqState, state, challenge, request, response;
+
+        _verifier = GenerateRandomBase64Data(32);
 
         Error = null;
         reqState = null;
         state = GenerateRandomBase64Data(32);
-        verifier = GenerateRandomBase64Data(32);
-        challenge = SHA256(verifier);
+
+        challenge = SHA256(_verifier);
 
         try
         {
