@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 using DarkUI.Forms;
 
+using LiveSplit.Localization;
 using LiveSplit.Racetime.Controller;
 using LiveSplit.Racetime.Model;
 
@@ -17,6 +18,8 @@ namespace LiveSplit.Racetime.View;
 
 public partial class ChannelForm : DarkForm
 {
+    private static string T(string source) => UiLocalizer.Translate(source, LanguageResolver.ResolveCurrentCultureLanguage());
+
     public RacetimeChannel Channel { get; set; }
 
     public ChannelForm(RacetimeChannel channel, string channelId, bool alwaysOnTop = true)
@@ -34,11 +37,12 @@ public partial class ChannelForm : DarkForm
         TopMost = alwaysOnTop;
         Show();
         chatBox.Hide();
-        Text = "Connecting to " + channelId[(channelId.IndexOf('/') + 1)..];
+        Text = T("Connecting to ") + channelId[(channelId.IndexOf('/') + 1)..];
         Channel.Connect(channelId);
 
         chatBox.SourceChanged += OnSourceChanged;
         chatBox.CoreWebView2InitializationCompleted += OnCoreWebViewCreated;
+        UiLocalizer.Apply(this, LanguageResolver.ResolveCurrentCultureLanguage());
     }
 
     private async void OnLoaded(object sender, EventArgs e)
@@ -72,7 +76,7 @@ public partial class ChannelForm : DarkForm
         {
             if (retries >= 5)
             {
-                loadMessage.BeginInvoke((Action)(() => loadMessage.Text = "Error loading page."));
+                loadMessage.BeginInvoke((Action)(() => loadMessage.Text = T("Error loading page.")));
                 chatBox = null;
             }
             else
@@ -143,7 +147,7 @@ public partial class ChannelForm : DarkForm
     {
         if (!IsDisposed)
         {
-            Text = "Disconnected";
+            Text = T("Disconnected");
         }
     }
 
@@ -151,7 +155,7 @@ public partial class ChannelForm : DarkForm
     {
         if (Channel.Race?.State == RaceState.Started && Channel.PersonalStatus == UserStatus.Racing)
         {
-            DialogResult r = MessageBox.Show("Do you want to FORFEIT before closing the window?", "", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+            DialogResult r = MessageBox.Show(T("Do you want to FORFEIT before closing the window?"), "", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (r == DialogResult.Yes)
             {
                 Channel.Forfeit();
@@ -177,13 +181,13 @@ public partial class ChannelForm : DarkForm
             return;
         }
 
-        var downloadButton = new TaskDialogButton("Download") { CommandLinkNote = "This will open in your default web browser." };
-        var closeButton = new TaskDialogButton("Close") { CommandLinkNote = "LiveSplit.Racetime will not work until runtimes are installed." };
+        var downloadButton = new TaskDialogButton(T("Download")) { CommandLinkNote = T("This will open in your default web browser.") };
+        var closeButton = new TaskDialogButton(T("Close")) { CommandLinkNote = T("LiveSplit.Racetime will not work until runtimes are installed.") };
 
         var dialog = new TaskDialog(Container);
         dialog.CustomMainIcon = dialog.WindowIcon = Icon;
-        dialog.MainInstruction = dialog.WindowTitle = "Microsoft Edge WebView2 Runtime Required";
-        dialog.Content = "LiveSplit.Racetime requires the Microsoft Edge WebView2 Runtime to be installed on your machine in order to function. This should be included with Microsoft Edge, but we couldn't find it. Do you want to download it now?";
+        dialog.MainInstruction = dialog.WindowTitle = T("Microsoft Edge WebView2 Runtime Required");
+        dialog.Content = T("LiveSplit.Racetime requires the Microsoft Edge WebView2 Runtime to be installed on your machine in order to function. This should be included with Microsoft Edge, but we couldn't find it. Do you want to download it now?");
         dialog.Buttons.Add(downloadButton);
         dialog.Buttons.Add(closeButton);
         dialog.ButtonStyle = TaskDialogButtonStyle.CommandLinks;
