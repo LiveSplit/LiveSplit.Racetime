@@ -1,9 +1,8 @@
-﻿using System;
+﻿using LiveSplit.Options;
+using LiveSplit.UI;
+using System;
 using System.Windows.Forms;
 using System.Xml;
-
-using LiveSplit.Options;
-using LiveSplit.UI;
 
 namespace LiveSplit.Racetime;
 

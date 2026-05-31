@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-
-using LiveSplit.Model;
+﻿using LiveSplit.Model;
 using LiveSplit.Racetime.Controller;
 using LiveSplit.Racetime.Model;
 using LiveSplit.Racetime.View;
 using LiveSplit.UI.Components;
 using LiveSplit.Web;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace LiveSplit.Racetime;
 
@@ -18,16 +17,8 @@ public class RacetimeAPI : RaceProviderAPI
 {
     protected static readonly Uri BaseUri = new($"{Properties.Resources.PROTOCOL_REST}://{Properties.Resources.DOMAIN}/");
     protected static string racesEndpoint => Properties.Resources.ENDPOINT_RACES;
-    private static RacetimeAPI _instance;
-    public static RacetimeAPI Instance
-    {
-        get
-        {
-            _instance ??= new RacetimeAPI();
 
-            return _instance;
-        }
-    }
+    public static RacetimeAPI Instance => field ??= new();
 
     public RacetimeAPI()
     {
