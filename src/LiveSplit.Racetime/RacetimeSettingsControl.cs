@@ -5,14 +5,12 @@ namespace LiveSplit.Racetime;
 
 public partial class RacetimeSettingsControl : UserControl
 {
-    private RacetimeSettings settings;
-
     public RacetimeSettings Settings
     {
-        get => settings;
+        get;
         set
         {
-            settings = value;
+            field = value;
             RacetimeSettingsControl_VisibleChanged(this, null);
         }
     }

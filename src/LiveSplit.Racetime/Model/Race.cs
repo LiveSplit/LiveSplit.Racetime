@@ -1,9 +1,8 @@
-﻿using System;
+﻿using LiveSplit.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-
-using LiveSplit.Model;
 
 namespace LiveSplit.Racetime.Model;
 

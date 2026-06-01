@@ -1,4 +1,11 @@
-﻿using System;
+﻿using LiveSplit.Model;
+using LiveSplit.Model.Comparisons;
+using LiveSplit.Model.Input;
+using LiveSplit.Options;
+using LiveSplit.Racetime.Model;
+using LiveSplit.TimeFormatters;
+using LiveSplit.Web;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,14 +14,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-
-using LiveSplit.Model;
-using LiveSplit.Model.Comparisons;
-using LiveSplit.Model.Input;
-using LiveSplit.Options;
-using LiveSplit.Racetime.Model;
-using LiveSplit.TimeFormatters;
-using LiveSplit.Web;
 
 namespace LiveSplit.Racetime.Controller;
 
@@ -136,16 +135,7 @@ public class RacetimeChannel
         IEnumerable<ChatMessage> chatmessages = Parse(JSON.FromString(msg));
         try
         {
-            ChatMessage racemessage;
-            if (chatmessages.Count() > 1)
-            {
-                racemessage = chatmessages.OrderByDescending(x => x.Data.version).FirstOrDefault();
-            }
-            else
-            {
-                racemessage = chatmessages.FirstOrDefault();
-            }
-
+            ChatMessage racemessage = chatmessages.OrderByDescending(cm => cm.Data.version).FirstOrDefault();
             if (racemessage != null)
             {
                 if (racemessage.Type == MessageType.SplitUpdate)
@@ -447,7 +437,7 @@ public class RacetimeChannel
 
         if (split.IsFinish)
         {
-            segment = run.Last();
+            segment = run[^1];
         }
 
         if (segment != null)
@@ -718,9 +708,9 @@ public class RacetimeChannel
 
     public void SendSystemMessage(string message, bool important = false)
     {
-        var msg = new ChatMessage[] { LiveSplitMessage.Create(message, important) };
+        ChatMessage[] msg = [LiveSplitMessage.Create(message, important)];
         MessageReceived?.Invoke(this, msg);
-        RawMessageReceived?.Invoke(this, msg.First().Posted.ToString());
+        RawMessageReceived?.Invoke(this, msg[0].Posted.ToString());
     }
 
     public void Ready()

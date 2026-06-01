@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LiveSplit.Racetime.Model;
+using LiveSplit.Web;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -7,9 +9,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
-using LiveSplit.Racetime.Model;
-using LiveSplit.Web;
 
 namespace LiveSplit.Racetime.Controller;
 
@@ -73,27 +72,22 @@ public class RacetimeAuthenticator
         try
         {
             byte[] readBuffer = new byte[client.ReceiveBufferSize];
-            string fullServerReply = null;
 
-            using (var inStream = new MemoryStream())
+            using var inStream = new MemoryStream();
+            NetworkStream stream = client.GetStream();
+
+            while (stream.DataAvailable)
             {
-                NetworkStream stream = client.GetStream();
-
-                while (stream.DataAvailable)
+                int numberOfBytesRead = stream.Read(readBuffer, 0, readBuffer.Length);
+                if (numberOfBytesRead <= 0)
                 {
-                    int numberOfBytesRead = stream.Read(readBuffer, 0, readBuffer.Length);
-                    if (numberOfBytesRead <= 0)
-                    {
-                        break;
-                    }
-
-                    inStream.Write(readBuffer, 0, numberOfBytesRead);
+                    break;
                 }
 
-                fullServerReply = Encoding.UTF8.GetString(inStream.ToArray());
+                inStream.Write(readBuffer, 0, numberOfBytesRead);
             }
 
-            return fullServerReply;
+            return Encoding.UTF8.GetString(inStream.ToArray());
         }
         catch (Exception)
         {
@@ -105,7 +99,7 @@ public class RacetimeAuthenticator
     {
         byte[] bytes = Encoding.ASCII.GetBytes(inputStirng);
         var sha256 = new SHA256Managed();
-        var hash = sha256.ComputeHash(bytes);
+        byte[] hash = sha256.ComputeHash(bytes);
 
         string base64 = Convert.ToBase64String(hash);
         base64 = base64.Replace("+", "-");
@@ -246,47 +240,45 @@ public class RacetimeAuthenticator
 
             System.Diagnostics.Process.Start(request);
 
-            using (TcpClient serverConnection = await serverConnectionTask)
+            using TcpClient serverConnection = await serverConnectionTask;
+            response = ReadResponse(serverConnection);
+
+            StopLocalEndpoint();
+
+            foreach (Match m in parameterRegex.Matches(response))
             {
-                response = ReadResponse(serverConnection);
-
-                StopLocalEndpoint();
-
-                foreach (Match m in parameterRegex.Matches(response))
+                switch (m.Groups[1].Value)
                 {
-                    switch (m.Groups[1].Value)
-                    {
-                        case "state": reqState = m.Groups[2].Value; break;
-                        case "code": Code = m.Groups[2].Value; break;
-                        case "error": Error = m.Groups[2].Value; break;
-                    }
+                    case "state": reqState = m.Groups[2].Value; break;
+                    case "code": Code = m.Groups[2].Value; break;
+                    case "error": Error = m.Groups[2].Value; break;
                 }
+            }
 
-                if (Error != null)
+            if (Error != null)
+            {
+                if (Error == "invalid_token" && RefreshToken != null)
                 {
-                    if (Error == "invalid_token" && RefreshToken != null)
-                    {
-                        Error = "Access Token expired";
-                        return 401;
-                    }
-                    else
-                    {
-                        await SendRedirectAsync(serverConnection, s.FailureEndpoint);
-                        Error = "Unable to authenticate: The server rejected the request";
-                        return 403;
-                    }
+                    Error = "Access Token expired";
+                    return 401;
                 }
-
-                if (state != reqState)
+                else
                 {
                     await SendRedirectAsync(serverConnection, s.FailureEndpoint);
-                    Error = "Unable to authenticate: The server hasn't responded correctly. Possible protocol error";
-                    return 400;
+                    Error = "Unable to authenticate: The server rejected the request";
+                    return 403;
                 }
-
-                await SendRedirectAsync(serverConnection, s.SuccessEndpoint);
-                serverConnection.Close();
             }
+
+            if (state != reqState)
+            {
+                await SendRedirectAsync(serverConnection, s.FailureEndpoint);
+                Error = "Unable to authenticate: The server hasn't responded correctly. Possible protocol error";
+                return 400;
+            }
+
+            await SendRedirectAsync(serverConnection, s.SuccessEndpoint);
+            serverConnection.Close();
 
             StopLocalEndpoint();
         }
@@ -432,11 +424,8 @@ public class RacetimeAuthenticator
         tokenRequest.Accept = "Accept=text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
         byte[] buf = Encoding.ASCII.GetBytes(body);
         tokenRequest.ContentLength = buf.Length;
-        using (Stream stream = tokenRequest.GetRequestStream())
-        {
-            await stream.WriteAsync(buf, 0, buf.Length);
-            stream.Close();
-        }
+        using Stream stream = tokenRequest.GetRequestStream();
+        await stream.WriteAsync(buf, 0, buf.Length);
 
         try
         {

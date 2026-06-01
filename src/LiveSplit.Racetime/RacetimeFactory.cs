@@ -1,9 +1,8 @@
-﻿using System;
-
-using LiveSplit.Model;
+﻿using LiveSplit.Model;
 using LiveSplit.Options;
 using LiveSplit.Racetime;
 using LiveSplit.UI.Components;
+using System;
 
 [assembly: ComponentFactory(typeof(RacetimeFactory))]
 

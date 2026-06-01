@@ -1,6 +1,5 @@
+﻿using LiveSplit.Model;
 using System;
-
-using LiveSplit.Model;
 
 namespace LiveSplit.Racetime.Model;
 

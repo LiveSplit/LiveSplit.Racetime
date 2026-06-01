@@ -5,19 +5,18 @@ namespace LiveSplit.Racetime.Model;
 
 public class RacetimeUser : RTModelBase
 {
-    private int nameChcecksum = -1;
     public int Class
     {
         get
         {
-            if (nameChcecksum == -1)
+            if (field == -1)
             {
-                nameChcecksum = Name.Sum(x => x);
+                field = Name.Sum(x => x);
             }
 
-            return nameChcecksum;
+            return field;
         }
-    }
+    } = -1;
     public override bool Equals(object obj)
     {
         return Name.ToLower() == ((RacetimeUser)obj)?.Name?.ToLower();

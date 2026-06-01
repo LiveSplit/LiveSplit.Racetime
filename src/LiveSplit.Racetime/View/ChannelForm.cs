@@ -1,18 +1,14 @@
-﻿using System;
+﻿using DarkUI.Forms;
+using LiveSplit.Localization;
+using LiveSplit.Racetime.Controller;
+using LiveSplit.Racetime.Model;
+using Microsoft.Web.WebView2.Core;
+using Ookii.Dialogs.WinForms;
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using DarkUI.Forms;
-
-using LiveSplit.Localization;
-using LiveSplit.Racetime.Controller;
-using LiveSplit.Racetime.Model;
-
-using Microsoft.Web.WebView2.Core;
-
-using Ookii.Dialogs.WinForms;
 
 namespace LiveSplit.Racetime.View;
 
@@ -76,7 +72,7 @@ public partial class ChannelForm : DarkForm
         {
             if (retries >= 5)
             {
-                loadMessage.BeginInvoke((Action)(() => loadMessage.Text = T("Error loading page.")));
+                loadMessage.BeginInvoke(() => loadMessage.Text = T("Error loading page."));
                 chatBox = null;
             }
             else
@@ -92,7 +88,7 @@ public partial class ChannelForm : DarkForm
         }
         else
         {
-            chatBox.BeginInvoke(() => chatBox.Show());
+            chatBox.BeginInvoke(chatBox.Show);
             retries = 0;
         }
     }
@@ -116,7 +112,7 @@ public partial class ChannelForm : DarkForm
                     {
                         if (Channel.Token != null)
                         {
-                            chatBox.BeginInvoke((Action)(() => chatBox.Source = new Uri(Channel.FullWebRoot + Channel.Race.Id + "/livesplit")));
+                            chatBox.BeginInvoke(() => chatBox.Source = new Uri(Channel.FullWebRoot + Channel.Race.Id + "/livesplit"));
                         }
                     }
                 }
@@ -140,7 +136,7 @@ public partial class ChannelForm : DarkForm
 
     private void Channel_Authorized(object sender, EventArgs e)
     {
-        chatBox.BeginInvoke((Action)(() => Focus()));
+        chatBox.BeginInvoke(Focus);
     }
 
     private void Channel_Disconnected(object sender, EventArgs e)
@@ -177,7 +173,7 @@ public partial class ChannelForm : DarkForm
     {
         if (InvokeRequired)
         {
-            Invoke(() => ShowWebView2DownloadDialog());
+            Invoke(ShowWebView2DownloadDialog);
             return;
         }
 
